@@ -12,6 +12,7 @@ export default function MainLayout({ children }) {
     { label: 'Dashboard', path: '/dashboard', icon: '📊' },
     { label: 'Transactions', path: '/transactions', icon: '💳' },
     { label: 'Expenses', path: '/expenses', icon: '💰' },
+    { label: 'Loans', path: '/loans', icon: '🏦' },
     { label: 'Reports', path: '/reports', icon: '📈' },
     { label: 'Settings', path: '/settings', icon: '⚙️' },
   ];

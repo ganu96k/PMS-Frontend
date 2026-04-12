@@ -5,6 +5,7 @@ import Dashboard from "./sections/Dashboard/Dashboard";
 import Transactions from "./sections/Transactions/Transactions";
 import Reports from "./sections/Reports/Reports";
 import ExpenseManagement from "./sections/ExpenseManagement/ExpenseManagement";
+import Loans from "./sections/Loans/Loans";
 import Contact from "./sections/Contact/Contact";
 import Footer from "./sections/Footer/Footer";
 import Hero from "./sections/Hero/Hero";
@@ -72,6 +73,14 @@ function App() {
         element={
           <PrivateRoute>
             <ExpenseManagement />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/loans" 
+        element={
+          <PrivateRoute>
+            <Loans />
           </PrivateRoute>
         } 
       />

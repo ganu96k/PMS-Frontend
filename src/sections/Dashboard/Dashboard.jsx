@@ -14,8 +14,13 @@ export default function Dashboard() {
     weeklyTotal: 0,
     monthlyTotal: 0,
     dailyAverage: 0,
+    totalLoans: 0,
+    activeLoans: 0,
+    totalLoanAmount: 0,
+    totalOutstanding: 0,
   });
   const [recentTransactions, setRecentTransactions] = useState([]);
+  const [loans, setLoans] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,12 +32,21 @@ export default function Dashboard() {
       const token = localStorage.getItem('authToken');
       const headers = { Authorization: `Bearer ${token}` };
 
-      const response = await axios.get(
+      // Fetch expenses
+      const expenseResponse = await axios.get(
         'http://localhost:8080/api/expenses',
         { headers }
       );
 
-      const expenses = response.data || [];
+      // Fetch loans
+      const loanResponse = await axios.get(
+        'http://localhost:8080/api/loans',
+        { headers }
+      );
+
+      const expenses = expenseResponse.data || [];
+      const loansData = loanResponse.data || [];
+
       const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
 
       // Calculate weekly total (last 7 days)
@@ -55,6 +69,11 @@ export default function Dashboard() {
       // Calculate daily average
       const dailyAverage = expenses.length > 0 ? totalExpenses / expenses.length : 0;
 
+      // Calculate loan stats
+      const totalLoanAmount = loansData.reduce((sum, l) => sum + parseFloat(l.principalAmount || 0), 0);
+      const totalOutstanding = loansData.reduce((sum, l) => sum + parseFloat(l.outstandingAmount || 0), 0);
+      const activeLoans = loansData.filter(l => l.status === 'ACTIVE').length;
+
       setStats({
         totalExpenses,
         totalIncome: 50000,
@@ -63,9 +82,14 @@ export default function Dashboard() {
         weeklyTotal,
         monthlyTotal,
         dailyAverage,
+        totalLoans: loansData.length,
+        activeLoans,
+        totalLoanAmount,
+        totalOutstanding,
       });
 
       setRecentTransactions(expenses.slice(0, 5));
+      setLoans(loansData.slice(0, 3));
       setLoading(false);
     } catch (error) {
       console.error('Error:', error);
@@ -152,6 +176,37 @@ export default function Dashboard() {
             </div>
             <div className={styles.statFooter}>Per transaction</div>
           </div>
+
+          <div className={styles.statCard}>
+            <div className={styles.statHeader}>
+              <h3>Total Loans</h3>
+              <span className={styles.icon}>📋</span>
+            </div>
+            <div className={styles.statValue}>{stats.totalLoans}</div>
+            <div className={styles.statFooter}>{stats.activeLoans} active</div>
+          </div>
+
+          <div className={styles.statCard}>
+            <div className={styles.statHeader}>
+              <h3>Loan Amount</h3>
+              <span className={styles.icon}>🏦</span>
+            </div>
+            <div className={styles.statValue}>
+              ₹{stats.totalLoanAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+            </div>
+            <div className={styles.statFooter}>Principal amount</div>
+          </div>
+
+          <div className={styles.statCard}>
+            <div className={styles.statHeader}>
+              <h3>Outstanding</h3>
+              <span className={styles.icon}>⚠️</span>
+            </div>
+            <div className={styles.statValue}>
+              ₹{stats.totalOutstanding.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+            </div>
+            <div className={styles.statFooter}>Balance remaining</div>
+          </div>
         </div>
 
         {/* Recent Transactions */}
@@ -186,6 +241,47 @@ export default function Dashboard() {
             </table>
           ) : (
             <div className={styles.empty}>No transactions yet</div>
+          )}
+        </div>
+
+        {/* Recent Loans */}
+        <div className={styles.transactionsCard}>
+          <div className={styles.cardHeader}>
+            <h3>Recent Loans</h3>
+            <a href="/loans" className={styles.viewAll}>View All →</a>
+          </div>
+
+          {loading ? (
+            <div className={styles.loading}>Loading...</div>
+          ) : loans.length > 0 ? (
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Loan Name</th>
+                  <th>Principal</th>
+                  <th>Outstanding</th>
+                  <th>Interest Rate</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loans.map((loan) => (
+                  <tr key={loan.id}>
+                    <td>{loan.loanName}</td>
+                    <td>₹{parseFloat(loan.principalAmount).toFixed(2)}</td>
+                    <td>₹{parseFloat(loan.outstandingAmount).toFixed(2)}</td>
+                    <td>{loan.interestRate}%</td>
+                    <td>
+                      <span className={`${styles.statusBadge} ${styles[loan.status?.toLowerCase()]}`}>
+                        {loan.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className={styles.empty}>No loans yet</div>
           )}
         </div>
       </div>

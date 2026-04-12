@@ -1,0 +1,418 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.header h2 {
+  margin: 0 0 4px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #162339;
+}
+
+.header p {
+  margin: 0;
+  font-size: 13px;
+  color: #8892a8;
+}
+
+.addBtn {
+  background: linear-gradient(135deg, #0d47a1, #1565c0);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addBtn:hover {
+  box-shadow: 0 4px 12px rgba(13, 71, 161, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Summary Cards */
+.summaryCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 12px;
+  color: #8892a8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0d47a1;
+}
+
+/* Form Card */
+.formCard {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-top: 4px solid #0d47a1;
+}
+
+.formCard h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #162339;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formGroup label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #162339;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  padding: 10px 12px;
+  border: 1px solid #e0e4e9;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: #0d47a1;
+  box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1);
+}
+
+.submitBtn {
+  background: linear-gradient(135deg, #0d47a1, #1565c0);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-self: flex-start;
+}
+
+.submitBtn:hover {
+  box-shadow: 0 4px 12px rgba(13, 71, 161, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Table */
+.tableCard {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table thead tr {
+  background: linear-gradient(135deg, #0d47a1, #1565c0);
+  color: white;
+}
+
+.table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.table td {
+  padding: 12px;
+  border-bottom: 1px solid #e0e4e9;
+}
+
+.table tbody tr:hover {
+  background-color: #f7f9fc;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.badge.paid_off {
+  background: #d4edda;
+  color: #155724;
+}
+
+.badge.defaulted {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.viewBtn,
+.deleteBtn {
+  background: none;
+  border: none;
+  color: #0d47a1;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  margin-right: 12px;
+  transition: color 0.2s ease;
+}
+
+.viewBtn:hover {
+  color: #1565c0;
+}
+
+.deleteBtn {
+  color: #e74c3c;
+}
+
+.deleteBtn:hover {
+  color: #c0392b;
+}
+
+.loading,
+.empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: #8892a8;
+  font-size: 13px;
+}
+
+/* Detail View */
+.detailContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.backBtn {
+  background: #f7f9fc;
+  border: 1px solid #e0e4e9;
+  color: #0d47a1;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.backBtn:hover {
+  background: #e8ecf1;
+  border-color: #0d47a1;
+}
+
+.detailLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .detailLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detailCard {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.detailCard h2 {
+  margin: 0 0 20px 0;
+  color: #162339;
+  font-size: 20px;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detailLabel {
+  font-size: 11px;
+  color: #8892a8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detailValue {
+  font-size: 16px;
+  color: #162339;
+  font-weight: 600;
+}
+
+.notesSection {
+  padding: 16px;
+  background: #f7f9fc;
+  border-radius: 6px;
+  margin: 16px 0;
+}
+
+.notesLabel {
+  font-size: 11px;
+  color: #8892a8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.notesSection p {
+  margin: 8px 0 0 0;
+  color: #162339;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.deleteLoanBtn {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 16px;
+}
+
+.deleteLoanBtn:hover {
+  background: #f5c6cb;
+  border-color: #721c24;
+}
+
+.emiCard {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  height: fit-content;
+}
+
+.emiCard h3 {
+  margin: 0 0 16px 0;
+  color: #162339;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.emiTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.emiTable thead tr {
+  background: #f7f9fc;
+  border-bottom: 2px solid #e0e4e9;
+}
+
+.emiTable th {
+  padding: 10px;
+  text-align: left;
+  font-weight: 600;
+  color: #162339;
+}
+
+.emiTable td {
+  padding: 10px;
+  border-bottom: 1px solid #e0e4e9;
+  color: #162339;
+}
+
+.emiTable tbody tr:hover {
+  background-color: #f7f9fc;
+}
+
+.statusBadge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.detailLeft,
+.detailRight {
+  display: flex;
+  flex-direction: column;
+}
