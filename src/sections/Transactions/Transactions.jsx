@@ -147,6 +147,31 @@ export default function Transactions() {
 
   const totalAmount = filteredTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
 
+  // Calculate weekly total (last 7 days)
+  const getWeeklyTotal = () => {
+    const today = new Date();
+    const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    return filteredTransactions
+      .filter(t => new Date(t.expense_date) >= sevenDaysAgo)
+      .reduce((sum, t) => sum + (t.amount || 0), 0);
+  };
+
+  // Calculate monthly total (current month)
+  const getMonthlyTotal = () => {
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    return filteredTransactions
+      .filter(t => {
+        const tDate = new Date(t.expense_date);
+        return tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
+      })
+      .reduce((sum, t) => sum + (t.amount || 0), 0);
+  };
+
+  const weeklyTotal = getWeeklyTotal();
+  const monthlyTotal = getMonthlyTotal();
+
   return (
     <MainLayout>
       <div className={styles.container}>
@@ -170,6 +195,14 @@ export default function Transactions() {
           <div className={styles.card}>
             <span className={styles.label}>Total Amount</span>
             <span className={styles.value}>${totalAmount.toFixed(2)}</span>
+          </div>
+          <div className={styles.card}>
+            <span className={styles.label}>Weekly Total</span>
+            <span className={styles.value}>${weeklyTotal.toFixed(2)}</span>
+          </div>
+          <div className={styles.card}>
+            <span className={styles.label}>Monthly Total</span>
+            <span className={styles.value}>${monthlyTotal.toFixed(2)}</span>
           </div>
           <div className={styles.card}>
             <span className={styles.label}>Average Transaction</span>

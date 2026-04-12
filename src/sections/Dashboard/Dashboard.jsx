@@ -11,6 +11,9 @@ export default function Dashboard() {
     totalIncome: 50000,
     balance: 50000,
     transactionCount: 0,
+    weeklyTotal: 0,
+    monthlyTotal: 0,
+    dailyAverage: 0,
   });
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,11 +35,34 @@ export default function Dashboard() {
       const expenses = response.data || [];
       const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
 
+      // Calculate weekly total (last 7 days)
+      const today = new Date();
+      const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const weeklyTotal = expenses
+        .filter(e => new Date(e.expense_date) >= sevenDaysAgo)
+        .reduce((sum, e) => sum + (e.amount || 0), 0);
+
+      // Calculate monthly total (current month)
+      const currentMonth = today.getMonth();
+      const currentYear = today.getFullYear();
+      const monthlyTotal = expenses
+        .filter(e => {
+          const eDate = new Date(e.expense_date);
+          return eDate.getMonth() === currentMonth && eDate.getFullYear() === currentYear;
+        })
+        .reduce((sum, e) => sum + (e.amount || 0), 0);
+
+      // Calculate daily average
+      const dailyAverage = expenses.length > 0 ? totalExpenses / expenses.length : 0;
+
       setStats({
         totalExpenses,
         totalIncome: 50000,
         balance: 50000 - totalExpenses,
         transactionCount: expenses.length,
+        weeklyTotal,
+        monthlyTotal,
+        dailyAverage,
       });
 
       setRecentTransactions(expenses.slice(0, 5));
@@ -92,6 +118,39 @@ export default function Dashboard() {
             </div>
             <div className={styles.statValue}>{stats.transactionCount}</div>
             <div className={styles.statFooter}>This period</div>
+          </div>
+
+          <div className={styles.statCard}>
+            <div className={styles.statHeader}>
+              <h3>Weekly Expenses</h3>
+              <span className={styles.icon}>📈</span>
+            </div>
+            <div className={styles.statValue}>
+              ${stats.weeklyTotal.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+            </div>
+            <div className={styles.statFooter}>Last 7 days</div>
+          </div>
+
+          <div className={styles.statCard}>
+            <div className={styles.statHeader}>
+              <h3>Monthly Expenses</h3>
+              <span className={styles.icon}>📅</span>
+            </div>
+            <div className={styles.statValue}>
+              ${stats.monthlyTotal.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+            </div>
+            <div className={styles.statFooter}>This month</div>
+          </div>
+
+          <div className={styles.statCard}>
+            <div className={styles.statHeader}>
+              <h3>Daily Average</h3>
+              <span className={styles.icon}>💳</span>
+            </div>
+            <div className={styles.statValue}>
+              ${stats.dailyAverage.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+            </div>
+            <div className={styles.statFooter}>Per transaction</div>
           </div>
         </div>
 
