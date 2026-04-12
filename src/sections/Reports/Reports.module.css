@@ -1,0 +1,387 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.header h2 {
+  margin: 0 0 4px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #162339;
+}
+
+.header p {
+  margin: 0;
+  font-size: 13px;
+  color: #8892a8;
+}
+
+.generateBtn {
+  background: linear-gradient(135deg, #0d47a1, #1565c0);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.generateBtn:hover {
+  box-shadow: 0 4px 12px rgba(13, 71, 161, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Analytics Grid */
+.analyticsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: all 0.2s ease;
+  border-left: 4px solid #0d47a1;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.cardIcon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.cardContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cardContent h3 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8892a8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.value {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #0d47a1;
+}
+
+.meta {
+  font-size: 11px;
+  color: #8892a8;
+}
+
+/* Report Selector */
+.reportSelector {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tabs {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  background: #f5f7fa;
+  border: 2px solid #dce1e6;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #162339;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  border-color: #0d47a1;
+  color: #0d47a1;
+}
+
+.tab.active {
+  background: linear-gradient(135deg, #0d47a1, #1565c0);
+  color: white;
+  border-color: #0d47a1;
+}
+
+/* Chart Card */
+.chartCard {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.chartCard h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #162339;
+}
+
+.chartContainer {
+  width: 100%;
+  height: 400px;
+}
+
+.barChart {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.chartBars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  width: 100%;
+  height: 100%;
+  gap: 12px;
+  padding: 20px 0;
+}
+
+.chartBar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-width: 60px;
+}
+
+.bar {
+  width: 100%;
+  background: linear-gradient(180deg, #0d47a1, #1565c0);
+  border-radius: 6px 6px 0 0;
+  position: relative;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+.bar:hover {
+  background: linear-gradient(180deg, #1a5acd, #1c6fd1);
+  box-shadow: 0 4px 12px rgba(13, 71, 161, 0.3);
+}
+
+.barValue {
+  font-size: 11px;
+  color: white;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.barLabel {
+  font-size: 11px;
+  color: #8892a8;
+  font-weight: 600;
+  text-align: center;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+/* Details Card */
+.detailsCard {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.detailsCard h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #162339;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table thead {
+  background: #f5f7fa;
+}
+
+.table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #8892a8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e8ecf1;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #e8ecf1;
+  transition: background 0.2s;
+}
+
+.table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.table td {
+  padding: 12px 16px;
+  color: #162339;
+}
+
+.periodCell {
+  font-weight: 600;
+}
+
+.amountCell {
+  color: #0d47a1;
+  font-weight: 600;
+}
+
+.centerCell {
+  text-align: center;
+}
+
+.badge {
+  display: inline-block;
+  background: #e3f2fd;
+  color: #0d47a1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Insights Card */
+.insightsCard {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  border-radius: 8px;
+  padding: 24px;
+  border-left: 4px solid #0d47a1;
+}
+
+.insightsCard h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #162339;
+}
+
+.insightsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.insight {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #162339;
+  line-height: 1.6;
+}
+
+.insightIcon {
+  color: #0d47a1;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Loading & Empty */
+.loading,
+.empty {
+  padding: 40px;
+  text-align: center;
+  color: #8892a8;
+  font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .analyticsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tabs {
+    justify-content: flex-start;
+  }
+
+  .chartContainer {
+    height: 300px;
+  }
+
+  .chartBars {
+    gap: 6px;
+  }
+
+  .bar {
+    padding-top: 4px;
+  }
+
+  .barValue {
+    font-size: 10px;
+  }
+
+  .table {
+    font-size: 12px;
+  }
+
+  .table th,
+  .table td {
+    padding: 8px 12px;
+  }
+
+  .insight {
+    font-size: 12px;
+  }
+}
