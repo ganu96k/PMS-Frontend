@@ -26,7 +26,7 @@ const TaskManagement = () => {
 
   const fetchTasks = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/tasks/user/${userId}`);
+      const res = await fetch(`http://localhost:8080/api/tasks/user/${userId}`);
       if (res.ok) {
         const data = await res.json();
         setTasks(data);
@@ -60,7 +60,7 @@ const TaskManagement = () => {
 
     try {
       if (formData.id) {
-        const res = await fetch(`http://localhost:8080/tasks/${formData.id}`, {
+        const res = await fetch(`http://localhost:8080/api/tasks/${formData.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -69,7 +69,7 @@ const TaskManagement = () => {
         const updatedTask = await res.json();
         setTasks(tasks.map((t) => (t.id === formData.id ? updatedTask : t)));
       } else {
-        const res = await fetch(`http://localhost:8080/tasks`, {
+        const res = await fetch(`http://localhost:8080/api/tasks`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -93,7 +93,7 @@ const TaskManagement = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this task?")) {
       try {
-        const res = await fetch(`http://localhost:8080/tasks/${id}`, { method: "DELETE" });
+        const res = await fetch(`http://localhost:8080/api/tasks/${id}`, { method: "DELETE" });
         if (!res.ok) throw new Error("Delete failed");
         setTasks(tasks.filter((t) => t.id !== id));
       } catch (err) {
@@ -118,7 +118,7 @@ const TaskManagement = () => {
     const newStatus = task.status === "COMPLETED" ? "PENDING" : "COMPLETED";
     const payload = { ...task, status: newStatus };
     try {
-      const res = await fetch(`http://localhost:8080/tasks/${task.id}`, {
+      const res = await fetch(`http://localhost:8080/api/tasks/${task.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
