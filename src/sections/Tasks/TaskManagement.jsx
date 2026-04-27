@@ -10,12 +10,15 @@ const TaskManagement = () => {
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
 
-  // Form state
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split("T")[0];
+
   const [formData, setFormData] = useState({
     id: null,
     title: "",
     description: "",
-    dueDate: new Date().toISOString().split("T")[0],
+    dueDate: tomorrowStr,
     priority: "MEDIUM",
     status: "PENDING",
   });
