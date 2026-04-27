@@ -8,6 +8,7 @@ export default function Loans() {
   const [selectedLoan, setSelectedLoan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   const [formData, setFormData] = useState({
     loanName: '',
@@ -51,22 +52,53 @@ export default function Loans() {
       const token = localStorage.getItem('authToken');
       const headers = { Authorization: `Bearer ${token}` };
       
-      await axios.post('http://localhost:8080/api/loans', formData, { headers });
+      if (editingId) {
+        await axios.put(`http://localhost:8080/api/loans/${editingId}`, formData, { headers });
+      } else {
+        await axios.post('http://localhost:8080/api/loans', formData, { headers });
+      }
+      
       fetchLoans();
-      setFormData({
-        loanName: '',
-        principalAmount: '',
-        interestRate: '',
-        startDate: new Date().toISOString().split('T')[0],
-        dueDate: '',
-        status: 'ACTIVE',
-        notes: '',
-      });
-      setShowForm(false);
+      resetForm();
     } catch (error) {
-      console.error('Error creating loan:', error);
-      alert('Error creating loan');
+      console.error('Error saving loan:', error);
+      alert('Error saving loan');
     }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      loanName: '',
+      principalAmount: '',
+      interestRate: '',
+      startDate: new Date().toISOString().split('T')[0],
+      dueDate: '',
+      status: 'ACTIVE',
+      notes: '',
+    });
+    setEditingId(null);
+    setShowForm(false);
+  };
+
+  const handleEditLoan = (loan) => {
+    setFormData({
+      ...loan,
+      startDate: new Date(loan.startDate).toISOString().split('T')[0],
+      dueDate: new Date(loan.dueDate).toISOString().split('T')[0],
+    });
+    setEditingId(loan.id);
+    setShowForm(true);
+  };
+
+  const handleCloneLoan = (loan) => {
+    setFormData({
+      ...loan,
+      loanName: loan.loanName + ' (Copy)',
+      startDate: new Date(loan.startDate).toISOString().split('T')[0],
+      dueDate: new Date(loan.dueDate).toISOString().split('T')[0],
+    });
+    setEditingId(null);
+    setShowForm(true);
   };
 
   const handleDelete = async (id) => {
@@ -96,7 +128,7 @@ export default function Loans() {
                 <h2>Loan Management</h2>
                 <p>Track and manage all your loans and EMI payments</p>
               </div>
-              <button className={styles.addBtn} onClick={() => setShowForm(!showForm)}>
+              <button className={styles.addBtn} onClick={() => { resetForm(); setShowForm(!showForm); }}>
                 {showForm ? '✕ Cancel' : '+ Add Loan'}
               </button>
             </div>
@@ -134,7 +166,7 @@ export default function Loans() {
             {/* Add Form */}
             {showForm && (
               <div className={styles.formCard}>
-                <h3>Add New Loan</h3>
+                <h3>{editingId ? 'Edit Loan' : 'Add New Loan'}</h3>
                 <form onSubmit={handleSubmit} className={styles.form}>
                   <div className={styles.formGrid}>
                     <div className={styles.formGroup}>
@@ -216,7 +248,7 @@ export default function Loans() {
                     />
                   </div>
                   <button type="submit" className={styles.submitBtn}>
-                    Add Loan
+                    {editingId ? 'Update Loan' : 'Add Loan'}
                   </button>
                 </form>
               </div>
@@ -262,7 +294,19 @@ export default function Loans() {
                             View Details
                           </button>
                           <button
-                            className={styles.deleteBtn}
+                            className={styles.viewBtn} style={{ marginLeft: 6, background: '#f59e0b' }}
+                            onClick={() => handleEditLoan(loan)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className={styles.viewBtn} style={{ marginLeft: 6, background: '#3b82f6' }}
+                            onClick={() => handleCloneLoan(loan)}
+                          >
+                            Clone
+                          </button>
+                          <button
+                            className={styles.deleteBtn} style={{ marginLeft: 6 }}
                             onClick={() => handleDelete(loan.id)}
                           >
                             Delete
@@ -295,6 +339,7 @@ export default function Loans() {
 function LoanDetail({ loan, onBack, onDelete }) {
   const [emis, setEmis] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editingEmi, setEditingEmi] = useState(null);
 
   useEffect(() => {
     fetchEMIs();
@@ -324,6 +369,22 @@ function LoanDetail({ loan, onBack, onDelete }) {
         return '#e74c3c';
       default:
         return '#95a5a6';
+    }
+  };
+
+  const submitEmiEdit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('authToken');
+      await axios.put(
+        `http://localhost:8080/api/loans/${loan.id}/emis/${editingEmi.id}`,
+        editingEmi,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setEditingEmi(null);
+      fetchEMIs();
+    } catch (err) {
+      alert('Error updating EMI');
     }
   };
 
@@ -400,7 +461,7 @@ function LoanDetail({ loan, onBack, onDelete }) {
                 </thead>
                 <tbody>
                   {emis.map((emi) => (
-                    <tr key={emi.id}>
+                    <tr key={emi.id} onClick={() => setEditingEmi({ ...emi, dueDate: new Date(emi.dueDate).toISOString().split('T')[0] })} style={{ cursor: 'pointer' }}>
                       <td>{emi.emiNumber}</td>
                       <td>{new Date(emi.dueDate).toLocaleDateString()}</td>
                       <td>₹{parseFloat(emi.principalAmount).toFixed(2)}</td>
@@ -424,6 +485,44 @@ function LoanDetail({ loan, onBack, onDelete }) {
           </div>
         </div>
       </div>
+
+      {editingEmi && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <h3>Edit EMI #{editingEmi.emiNumber}</h3>
+            <form onSubmit={submitEmiEdit} className={styles.form}>
+              <div className={styles.formGroup}>
+                <label>Due Date</label>
+                <input type="date" value={editingEmi.dueDate} onChange={(e) => setEditingEmi({...editingEmi, dueDate: e.target.value})} required />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Principal</label>
+                <input type="number" step="0.01" value={editingEmi.principalAmount} onChange={(e) => setEditingEmi({...editingEmi, principalAmount: e.target.value})} required />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Interest</label>
+                <input type="number" step="0.01" value={editingEmi.interestAmount} onChange={(e) => setEditingEmi({...editingEmi, interestAmount: e.target.value})} required />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Total Amount</label>
+                <input type="number" step="0.01" value={editingEmi.totalAmount} onChange={(e) => setEditingEmi({...editingEmi, totalAmount: e.target.value})} required />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Status</label>
+                <select value={editingEmi.status} onChange={(e) => setEditingEmi({...editingEmi, status: e.target.value})}>
+                  <option value="PENDING">Pending</option>
+                  <option value="PAID">Paid</option>
+                  <option value="OVERDUE">Overdue</option>
+                </select>
+              </div>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                <button type="button" className={styles.deleteBtn} onClick={() => setEditingEmi(null)}>Cancel</button>
+                <button type="submit" className={styles.submitBtn}>Save EMI</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
