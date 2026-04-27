@@ -31,11 +31,10 @@ const TaskManagement = () => {
         const data = await res.json();
         setTasks(data);
       } else {
-        throw new Error("Failed to fetch");
+        throw new Error("Failed to fetch tasks");
       }
     } catch (err) {
       setError("Unable to load tasks from server.");
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -114,8 +113,7 @@ const TaskManagement = () => {
     setError("");
   };
 
-  const toggleStatus = async (task) => {
-    const newStatus = task.status === "COMPLETED" ? "PENDING" : "COMPLETED";
+  const updateTaskStatus = async (task, newStatus) => {
     const payload = { ...task, status: newStatus };
     try {
       const res = await fetch(`http://localhost:8080/api/tasks/${task.id}`, {
@@ -134,10 +132,49 @@ const TaskManagement = () => {
 
   if (loading) return <div>Loading tasks...</div>;
 
+  // Split tasks by status
+  const pendingTasks = tasks.filter(t => t.status === "PENDING" || !t.status);
+  const inProgressTasks = tasks.filter(t => t.status === "IN_PROGRESS");
+  const completedTasks = tasks.filter(t => t.status === "COMPLETED");
+
+  const TaskCard = ({ task }) => (
+    <div className={`${styles.taskCard} ${task.status === 'COMPLETED' ? styles.completed : ''} ${task.priority === 'HIGH' ? styles.highPriority : ''}`}>
+      <div className={styles.taskHeader}>
+        <span className={`${styles.priorityBadge} ${styles[task.priority.toLowerCase()]}`}>
+          {task.priority}
+        </span>
+        <span className={styles.date}>{task.dueDate}</span>
+      </div>
+      <h3>{task.title}</h3>
+      {task.description && <p>{task.description}</p>}
+      
+      <div className={styles.taskFooter}>
+        <div className={styles.statusActions}>
+          {task.status !== 'PENDING' && (
+            <button className={styles.statusBtn} onClick={() => updateTaskStatus(task, 'PENDING')}>To Pending</button>
+          )}
+          {task.status !== 'IN_PROGRESS' && task.status !== 'COMPLETED' && (
+            <button className={styles.statusBtn} onClick={() => updateTaskStatus(task, 'IN_PROGRESS')}>Start</button>
+          )}
+          {task.status !== 'COMPLETED' && (
+            <button className={styles.statusBtn} onClick={() => updateTaskStatus(task, 'COMPLETED')}>Complete</button>
+          )}
+        </div>
+        <div className={styles.actions}>
+          <button className={styles.editBtn} onClick={() => handleEdit(task)}>Edit</button>
+          <button className={styles.deleteBtn} onClick={() => handleDelete(task.id)}>Delete</button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1>Daily Tasks</h1>
+        <div className={styles.headerLeft}>
+          <button className={styles.backBtn} onClick={() => navigate(-1)}>← Back</button>
+          <h1>Daily Tasks</h1>
+        </div>
         <button className={styles.addBtn} onClick={() => { resetForm(); setShowForm(true); }}>
           + Add Task
         </button>
@@ -178,7 +215,7 @@ const TaskManagement = () => {
           </div>
           <div className={styles.inputGroup}>
             <label>Description</label>
-            <textarea name="description" value={formData.description} onChange={handleInputChange} rows="3" />
+            <textarea name="description" value={formData.description} onChange={handleInputChange} rows="2" />
           </div>
           <div className={styles.formActions}>
             <button type="button" className={styles.cancelBtn} onClick={() => setShowForm(false)}>Cancel</button>
@@ -187,36 +224,33 @@ const TaskManagement = () => {
         </form>
       )}
 
-      <div className={styles.taskGrid}>
-        {tasks.map(task => (
-          <div key={task.id} className={`${styles.taskCard} ${task.status === 'COMPLETED' ? styles.completed : ''}`}>
-            <div className={styles.taskHeader}>
-              <span className={`${styles.priorityBadge} ${styles[task.priority.toLowerCase()]}`}>
-                {task.priority}
-              </span>
-              <span className={styles.date}>{task.dueDate}</span>
-            </div>
-            <h3>{task.title}</h3>
-            <p>{task.description}</p>
-            <div className={styles.taskFooter}>
-              <button 
-                type="button"
-                className={styles.statusToggle} 
-                onClick={() => toggleStatus(task)}
-              >
-                {task.status === "COMPLETED" ? "Mark Pending" : "Mark Complete"}
-              </button>
-              <div className={styles.actions}>
-                <button type="button" className={styles.editBtn} onClick={() => handleEdit(task)}>Edit</button>
-                <button type="button" className={styles.deleteBtn} onClick={() => handleDelete(task.id)}>Delete</button>
-              </div>
-            </div>
+      {!showForm && (
+        <div className={styles.board}>
+          <div className={styles.column}>
+            <h3 className={styles.columnHeader}>
+              Pending <span className={styles.count}>{pendingTasks.length}</span>
+            </h3>
+            {pendingTasks.map(t => <TaskCard key={t.id} task={t} />)}
+            {pendingTasks.length === 0 && <div className={styles.emptyState}>No pending tasks</div>}
           </div>
-        ))}
-        {tasks.length === 0 && !showForm && (
-          <div className={styles.emptyState}>No tasks found. Create one!</div>
-        )}
-      </div>
+
+          <div className={styles.column}>
+            <h3 className={styles.columnHeader}>
+              In Progress <span className={styles.count}>{inProgressTasks.length}</span>
+            </h3>
+            {inProgressTasks.map(t => <TaskCard key={t.id} task={t} />)}
+            {inProgressTasks.length === 0 && <div className={styles.emptyState}>Nothing in progress</div>}
+          </div>
+
+          <div className={styles.column}>
+            <h3 className={styles.columnHeader}>
+              Completed <span className={styles.count}>{completedTasks.length}</span>
+            </h3>
+            {completedTasks.map(t => <TaskCard key={t.id} task={t} />)}
+            {completedTasks.length === 0 && <div className={styles.emptyState}>No completed tasks</div>}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

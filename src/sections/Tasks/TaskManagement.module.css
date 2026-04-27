@@ -9,8 +9,30 @@
   margin-bottom: 24px;
 }
 
+.headerLeft {
+  display: flex;
+  align-items: center;
+}
+
+.backBtn {
+  background: transparent;
+  color: #2c3e50;
+  border: 1px solid #dce1e6;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.backBtn:hover {
+  background: #f1f2f6;
+}
+
 .header h1 {
-  font-size: 24px;
+  font-size: 20px;
   color: #2c3e50;
   margin: 0;
 }
@@ -19,9 +41,10 @@
   background: #3498db;
   color: #fff;
   border: none;
-  padding: 8px 16px;
+  padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 13px;
   font-weight: 500;
 }
 
@@ -30,32 +53,34 @@
 }
 
 .error {
-  background: #fee;
-  color: #c33;
-  padding: 12px;
+  background: #fff;
+  color: #e74c3c;
+  padding: 10px;
   border-radius: 4px;
-  margin-bottom: 20px;
+  border: 1px solid #e74c3c;
+  margin-bottom: 16px;
+  font-size: 13px;
 }
 
 .formCard {
   background: #fff;
-  padding: 24px;
-  border-radius: 8px;
+  padding: 20px;
+  border-radius: 6px;
   border: 1px solid #e1e8ed;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 }
 
 .formCard h2 {
   margin-top: 0;
-  margin-bottom: 20px;
-  font-size: 18px;
+  margin-bottom: 16px;
+  font-size: 16px;
   color: #2c3e50;
 }
 
 .formRow {
   display: flex;
-  gap: 20px;
-  margin-bottom: 16px;
+  gap: 16px;
+  margin-bottom: 12px;
 }
 
 .inputGroup {
@@ -65,33 +90,35 @@
 }
 
 .inputGroup label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   color: #34495e;
 }
 
 .inputGroup input,
 .inputGroup select,
 .inputGroup textarea {
-  padding: 8px 12px;
+  padding: 6px 10px;
   border: 1px solid #dce1e6;
   border-radius: 4px;
+  font-size: 13px;
   font-family: inherit;
 }
 
 .formActions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 20px;
+  gap: 8px;
+  margin-top: 16px;
 }
 
 .submitBtn {
   background: #2ecc71;
   color: #fff;
   border: none;
-  padding: 8px 24px;
+  padding: 6px 16px;
+  font-size: 13px;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
@@ -100,53 +127,93 @@
 .submitBtn:hover { background: #27ae60; }
 
 .cancelBtn {
-  background: #f8f9fa;
+  background: #fff;
   color: #2c3e50;
   border: 1px solid #ced4da;
-  padding: 8px 24px;
+  padding: 6px 16px;
+  font-size: 13px;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
 }
 
-.cancelBtn:hover { background: #e9ecef; }
+.cancelBtn:hover { background: #f8f9fa; }
 
-.taskGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+/* Kanban Board Layout */
+.board {
+  display: flex;
   gap: 20px;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding-bottom: 10px;
 }
 
+.column {
+  flex: 1;
+  min-width: 280px;
+  background: #f4f6f8;
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid #e1e8ed;
+}
+
+.columnHeader {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2c3e50;
+  text-transform: uppercase;
+  margin: 0 0 4px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.count {
+  background: #dce1e6;
+  color: #34495e;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 11px;
+}
+
+/* Task Cards */
 .taskCard {
   background: #fff;
   border: 1px solid #e1e8ed;
-  border-radius: 6px;
-  padding: 20px;
+  border-radius: 4px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.taskCard.highPriority {
+  border-left: 3px solid #e74c3c;
 }
 
 .taskCard.completed {
-  opacity: 0.7;
-  background: #f9fbfd;
+  opacity: 0.6;
+  background: #fafbfc;
 }
 
 .taskCard.completed h3 {
   text-decoration: line-through;
-  color: #7f8c8d;
 }
 
 .taskHeader {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .priorityBadge {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px;
   color: #fff;
 }
 
@@ -155,21 +222,22 @@
 .high { background: #e74c3c; }
 
 .date {
-  font-size: 12px;
+  font-size: 11px;
   color: #7f8c8d;
 }
 
 .taskCard h3 {
-  margin: 0 0 8px 0;
-  font-size: 16px;
+  margin: 0 0 6px 0;
+  font-size: 14px;
   color: #2c3e50;
+  line-height: 1.3;
 }
 
 .taskCard p {
-  margin: 0 0 20px 0;
-  font-size: 13px;
+  margin: 0 0 12px 0;
+  font-size: 12px;
   color: #7f8c8d;
-  flex-grow: 1;
+  line-height: 1.4;
 }
 
 .taskFooter {
@@ -177,59 +245,64 @@
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid #f1f2f6;
-  padding-top: 12px;
+  padding-top: 10px;
 }
 
-.statusToggle {
-  background: transparent;
-  border: 1px solid #95a5a6;
-  color: #7f8c8d;
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 11px;
+.statusActions {
+  display: flex;
+  gap: 4px;
+}
+
+.statusBtn {
+  background: #fff;
+  border: 1px solid #dce1e6;
+  color: #34495e;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 10px;
   cursor: pointer;
+  font-weight: 500;
 }
 
-.statusToggle:hover {
-  background: #f1f2f6;
-  color: #2c3e50;
+.statusBtn:hover {
+  background: #f8f9fa;
+  border-color: #bdc3c7;
 }
 
 .actions {
   display: flex;
-  gap: 8px;
+  gap: 4px;
+}
+
+.editBtn, .deleteBtn {
+  background: transparent;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  cursor: pointer;
+  font-weight: 500;
 }
 
 .editBtn {
-  background: #f1f2f6;
-  border: none;
-  color: #2c3e50;
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 11px;
-  cursor: pointer;
+  border: 1px solid #bdc3c7;
+  color: #34495e;
 }
 
-.editBtn:hover { background: #dfe4ea; }
+.editBtn:hover { background: #f1f2f6; }
 
 .deleteBtn {
-  background: transparent;
-  border: 1px solid #e74c3c;
+  border: 1px solid #ffb8b8;
   color: #e74c3c;
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 11px;
-  cursor: pointer;
 }
 
 .deleteBtn:hover {
-  background: #e74c3c;
-  color: #fff;
+  background: #fff0f0;
 }
 
 .emptyState {
-  grid-column: 1 / -1;
   text-align: center;
-  padding: 40px;
-  color: #7f8c8d;
+  padding: 20px;
+  color: #95a5a6;
+  font-size: 12px;
+  font-style: italic;
 }
