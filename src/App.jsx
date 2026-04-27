@@ -5,6 +5,7 @@ import Dashboard from "./sections/Dashboard/Dashboard";
 import Transactions from "./sections/Transactions/Transactions";
 import Reports from "./sections/Reports/Reports";
 import ExpenseManagement from "./sections/ExpenseManagement/ExpenseManagement";
+import IncomeManagement from "./sections/IncomeManagement/IncomeManagement";
 import Loans from "./sections/Loans/Loans";
 import Contact from "./sections/Contact/Contact";
 import Footer from "./sections/Footer/Footer";
@@ -15,6 +16,8 @@ import Registration from "./sections/Registration/Registration";
 import Gallery from "./sections/Gallery/Gallery";
 import Education from "./sections/Education/Education";
 import Certificates from "./sections/Certificates/Certificates";
+import Assets from "./sections/Assets/Assets";
+import Salesforce from "./sections/Salesforce/Salesforce";
 
 // Home page component
 function Home() {
@@ -25,6 +28,7 @@ function Home() {
       <Skills />
       <Certificates />
       <Projects />
+      <Assets />
       <Contact />
       <Gallery />
       <Footer />
@@ -77,10 +81,26 @@ function App() {
         } 
       />
       <Route 
+        path="/income" 
+        element={
+          <PrivateRoute>
+            <IncomeManagement />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
         path="/loans" 
         element={
           <PrivateRoute>
             <Loans />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/salesforce" 
+        element={
+          <PrivateRoute>
+            <Salesforce />
           </PrivateRoute>
         } 
       />
