@@ -130,24 +130,35 @@ const IncomeManagement = () => {
     }
 
     const payload = {
-      ...formData,
       userId: parseInt(userId),
+      incomeDate: formData.incomeDate,
       amount: parseFloat(formData.amount),
       categoryId: parseInt(formData.categoryId),
+      description: formData.description,
     };
 
     try {
       if (formData.id) {
         // Update existing income
+        const updateRes = await fetch(`http://localhost:8080/api/incomes/${formData.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!updateRes.ok) throw new Error("Failed to update");
+        const updatedIncome = await updateRes.json();
         setIncomes((prev) =>
-          prev.map((inc) => (inc.id === formData.id ? { ...inc, ...payload } : inc))
+          prev.map((inc) => (inc.id === formData.id ? updatedIncome : inc))
         );
       } else {
         // Add new income
-        const newIncome = {
-          id: Math.max(...incomes.map((i) => i.id), 0) + 1,
-          ...payload,
-        };
+        const createRes = await fetch(`http://localhost:8080/api/incomes`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!createRes.ok) throw new Error("Failed to create");
+        const newIncome = await createRes.json();
         setIncomes((prev) => [newIncome, ...prev]);
       }
 
@@ -160,6 +171,7 @@ const IncomeManagement = () => {
         description: "",
       });
       setShowForm(false);
+      setError("");
     } catch (err) {
       setError("Failed to save income");
       console.error(err);
@@ -177,9 +189,18 @@ const IncomeManagement = () => {
     setShowForm(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this income?")) {
-      setIncomes((prev) => prev.filter((inc) => inc.id !== id));
+      try {
+        const deleteRes = await fetch(`http://localhost:8080/api/incomes/${id}`, {
+          method: "DELETE",
+        });
+        if (!deleteRes.ok) throw new Error("Failed to delete");
+        setIncomes((prev) => prev.filter((inc) => inc.id !== id));
+      } catch(err) {
+        setError("Failed to delete income");
+        console.error(err);
+      }
     }
   };
 
@@ -197,17 +218,25 @@ const IncomeManagement = () => {
     }
   };
 
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = async () => {
     if (
       selectedRows.length > 0 &&
       window.confirm(
         `Delete ${selectedRows.length} selected incomes? This cannot be undone.`
       )
     ) {
-      setIncomes((prev) =>
-        prev.filter((inc) => !selectedRows.includes(inc.id))
-      );
-      setSelectedRows([]);
+      try {
+        await Promise.all(selectedRows.map(id => 
+          fetch(`http://localhost:8080/api/incomes/${id}`, { method: "DELETE" })
+        ));
+        setIncomes((prev) =>
+          prev.filter((inc) => !selectedRows.includes(inc.id))
+        );
+        setSelectedRows([]);
+      } catch(err) {
+        setError("Failed to delete some incomes");
+        console.error(err);
+      }
     }
   };
 
