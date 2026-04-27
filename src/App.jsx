@@ -6,6 +6,7 @@ import Transactions from "./sections/Transactions/Transactions";
 import Reports from "./sections/Reports/Reports";
 import ExpenseManagement from "./sections/ExpenseManagement/ExpenseManagement";
 import IncomeManagement from "./sections/IncomeManagement/IncomeManagement";
+import TaskManagement from "./sections/Tasks/TaskManagement";
 import Loans from "./sections/Loans/Loans";
 import Contact from "./sections/Contact/Contact";
 import Footer from "./sections/Footer/Footer";
@@ -85,6 +86,14 @@ function App() {
         element={
           <PrivateRoute>
             <IncomeManagement />
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/tasks" 
+        element={
+          <PrivateRoute>
+            <TaskManagement />
           </PrivateRoute>
         } 
       />

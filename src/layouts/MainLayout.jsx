@@ -13,6 +13,7 @@ export default function MainLayout({ children }) {
     { label: 'Transactions', path: '/transactions', icon: '💳' },
     { label: 'Expenses', path: '/expenses', icon: '💰' },
     { label: 'Income', path: '/income', icon: '💵' },
+    { label: 'Tasks', path: '/tasks', icon: '📋' },
     { label: 'Loans', path: '/loans', icon: '🏦' },
     { label: 'Reports', path: '/reports', icon: '📈' },
     { label: 'Settings', path: '/settings', icon: '⚙️' },
