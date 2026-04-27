@@ -26,11 +26,22 @@ export default function Loans() {
 
   const fetchLoans = async () => {
     try {
+      // 1. Instantly load from Browser Cache (sessionStorage)
+      const cachedLoans = sessionStorage.getItem('cached_loans');
+      if (cachedLoans) {
+        setLoans(JSON.parse(cachedLoans));
+        setLoading(false);
+      }
+
+      // 2. Fetch fresh data from Server in background
       const token = localStorage.getItem('authToken');
       const response = await axios.get('http://localhost:8080/api/loans', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setLoans(response.data || []);
+      
+      const freshData = response.data || [];
+      setLoans(freshData);
+      sessionStorage.setItem('cached_loans', JSON.stringify(freshData));
       setLoading(false);
     } catch (error) {
       console.error('Error fetching loans:', error);
@@ -370,11 +381,22 @@ function LoanDetail({ loan, onBack, onDelete }) {
 
   const fetchEMIs = async () => {
     try {
+      // Check cache first
+      const cacheKey = `cached_emis_${loan.id}`;
+      const cachedEmis = sessionStorage.getItem(cacheKey);
+      if (cachedEmis) {
+        setEmis(JSON.parse(cachedEmis));
+        setLoading(false);
+      }
+
       const token = localStorage.getItem('authToken');
       const response = await axios.get(`http://localhost:8080/api/loans/${loan.id}/emis`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setEmis(response.data || []);
+      
+      const freshEmis = response.data || [];
+      setEmis(freshEmis);
+      sessionStorage.setItem(cacheKey, JSON.stringify(freshEmis));
       setLoading(false);
     } catch (error) {
       console.error('Error fetching EMIs:', error);

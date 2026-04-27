@@ -30,26 +30,36 @@ const ExpenseManagement = () => {
 
   const fetchData = async () => {
     try {
-      // Fetch expenses
-      const expensesRes = await fetch(
-        `http://localhost:8080/api/expenses/user/${userId}`
-      );
+      // 1. Check Browser Cache for instant load
+      const cachedData = sessionStorage.getItem(`cached_expenses_data_${userId}`);
+      if (cachedData) {
+        const { exp, cat, pay } = JSON.parse(cachedData);
+        setExpenses(exp || []);
+        setCategories(cat || []);
+        setPaymentMethods(pay || []);
+        setLoading(false);
+      }
+
+      // 2. Fetch fresh data
+      const expensesRes = await fetch(`http://localhost:8080/api/expenses/user/${userId}`);
       const expensesData = await expensesRes.json();
-      setExpenses(expensesData);
-
-      // Fetch categories
-      const categoriesRes = await fetch(
-        "http://localhost:8080/api/categories/active"
-      );
+      
+      const categoriesRes = await fetch("http://localhost:8080/api/categories/active");
       const categoriesData = await categoriesRes.json();
-      setCategories(categoriesData);
-
-      // Fetch payment methods
-      const paymentRes = await fetch(
-        "http://localhost:8080/api/payment-methods/active"
-      );
+      
+      const paymentRes = await fetch("http://localhost:8080/api/payment-methods/active");
       const paymentData = await paymentRes.json();
+
+      setExpenses(expensesData);
+      setCategories(categoriesData);
       setPaymentMethods(paymentData);
+      
+      // Update Cache
+      sessionStorage.setItem(`cached_expenses_data_${userId}`, JSON.stringify({
+         exp: expensesData,
+         cat: categoriesData,
+         pay: paymentData
+      }));
 
       setError("");
     } catch (err) {
