@@ -274,42 +274,65 @@ export default function Loans() {
                   <tbody>
                     {loans.map((loan) => (
                       <tr key={loan.id}>
-                        <td>{loan.loanName}</td>
-                        <td>₹{parseFloat(loan.principalAmount).toFixed(2)}</td>
-                        <td>₹{parseFloat(loan.outstandingAmount).toFixed(2)}</td>
-                        <td>{loan.interestRate}%</td>
                         <td>
-                          <span
-                            className={`${styles.badge} ${styles[loan.status.toLowerCase()]}`}
-                          >
-                            {loan.status}
-                          </span>
+                          <div className={styles.inlineEditGroup} onClick={() => handleEditLoan(loan)} title="Edit Loan Name">
+                            <span>{loan.loanName}</span>
+                            <span className={styles.pencilIcon}>✎</span>
+                          </div>
                         </td>
-                        <td>{new Date(loan.dueDate).toLocaleDateString()}</td>
                         <td>
+                          <div className={styles.inlineEditGroup} onClick={() => handleEditLoan(loan)} title="Edit Principal">
+                            <span>₹{parseFloat(loan.principalAmount).toFixed(2)}</span>
+                            <span className={styles.pencilIcon}>✎</span>
+                          </div>
+                        </td>
+                        <td>
+                          <div className={styles.inlineEditGroup} onClick={() => handleEditLoan(loan)} title="Edit Outstanding">
+                            <span>₹{parseFloat(loan.outstandingAmount).toFixed(2)}</span>
+                            <span className={styles.pencilIcon}>✎</span>
+                          </div>
+                        </td>
+                        <td>
+                          <div className={styles.inlineEditGroup} onClick={() => handleEditLoan(loan)} title="Edit Interest Rate">
+                            <span>{loan.interestRate}%</span>
+                            <span className={styles.pencilIcon}>✎</span>
+                          </div>
+                        </td>
+                        <td>
+                          <div className={styles.inlineEditGroup} onClick={() => handleEditLoan(loan)} title="Edit Status">
+                            <span className={`${styles.badge} ${styles[loan.status.toLowerCase()]}`}>
+                              {loan.status}
+                            </span>
+                            <span className={styles.pencilIcon}>✎</span>
+                          </div>
+                        </td>
+                        <td>
+                          <div className={styles.inlineEditGroup} onClick={() => handleEditLoan(loan)} title="Edit Due Date">
+                            <span>{new Date(loan.dueDate).toLocaleDateString()}</span>
+                            <span className={styles.pencilIcon}>✎</span>
+                          </div>
+                        </td>
+                        <td style={{ display: 'flex', gap: '8px' }}>
                           <button
-                            className={styles.viewBtn}
+                            className={styles.actionIconBtn}
                             onClick={() => setSelectedLoan(loan)}
+                            title="View Details"
                           >
-                            View Details
+                            👁️
                           </button>
                           <button
-                            className={styles.viewBtn} style={{ marginLeft: 6, background: '#f59e0b' }}
-                            onClick={() => handleEditLoan(loan)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className={styles.viewBtn} style={{ marginLeft: 6, background: '#3b82f6' }}
+                            className={styles.actionIconBtn}
                             onClick={() => handleCloneLoan(loan)}
+                            title="Clone Loan"
                           >
-                            Clone
+                            📋
                           </button>
                           <button
-                            className={styles.deleteBtn} style={{ marginLeft: 6 }}
+                            className={styles.actionIconBtn} style={{ color: '#dc2626' }}
                             onClick={() => handleDelete(loan.id)}
+                            title="Delete Loan"
                           >
-                            Delete
+                            🗑️
                           </button>
                         </td>
                       </tr>
@@ -475,17 +498,40 @@ function LoanDetail({ loan, onBack, onDelete }) {
                   {emis.map((emi) => (
                     <tr key={emi.id} onClick={() => setEditingEmi({ ...emi, dueDate: new Date(emi.dueDate).toISOString().split('T')[0] })} style={{ cursor: 'pointer' }}>
                       <td>{emi.emiNumber}</td>
-                      <td>{new Date(emi.dueDate).toLocaleDateString()}</td>
-                      <td>₹{parseFloat(emi.principalAmount).toFixed(2)}</td>
-                      <td>₹{parseFloat(emi.interestAmount).toFixed(2)}</td>
-                      <td>₹{parseFloat(emi.totalAmount).toFixed(2)}</td>
                       <td>
-                        <span
-                          className={styles.statusBadge}
-                          style={{ backgroundColor: getStatusColor(emi.status) }}
-                        >
-                          {emi.status}
-                        </span>
+                        <div className={styles.inlineEditGroup} title="Edit Due Date">
+                          <span>{new Date(emi.dueDate).toLocaleDateString()}</span>
+                          <span className={styles.pencilIcon}>✎</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className={styles.inlineEditGroup} title="Edit Principal">
+                          <span>₹{parseFloat(emi.principalAmount).toFixed(2)}</span>
+                          <span className={styles.pencilIcon}>✎</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className={styles.inlineEditGroup} title="Edit Interest">
+                          <span>₹{parseFloat(emi.interestAmount).toFixed(2)}</span>
+                          <span className={styles.pencilIcon}>✎</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className={styles.inlineEditGroup} title="Edit Total">
+                          <span>₹{parseFloat(emi.totalAmount).toFixed(2)}</span>
+                          <span className={styles.pencilIcon}>✎</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className={styles.inlineEditGroup} title="Edit Status">
+                          <span
+                            className={styles.statusBadge}
+                            style={{ backgroundColor: getStatusColor(emi.status) }}
+                          >
+                            {emi.status}
+                          </span>
+                          <span className={styles.pencilIcon}>✎</span>
+                        </div>
                       </td>
                     </tr>
                   ))}

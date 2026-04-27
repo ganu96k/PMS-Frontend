@@ -490,3 +490,5 @@
     max-width: 90%;
   }
 }
+
+.inlineEditGroup { display: flex; align-items: center; gap: 6px; padding: 4px; border-radius: 4px; border: 1px solid transparent; cursor: pointer; transition: all 0.2s; } .inlineEditGroup:hover { background: #f8fafc; border-color: #e2e8f0; } .pencilIcon { opacity: 0; font-size: 12px; color: #64748b; transition: opacity 0.2s; } .inlineEditGroup:hover .pencilIcon { opacity: 1; } .inlineInput { padding: 4px 6px; border: 1px solid #2563eb; border-radius: 4px; font-size: 13px; width: 100%; outline: none; box-shadow: 0 0 0 2px rgba(37,99,235,0.2); } .actionIconBtn { background: none; border: none; font-size: 16px; cursor: pointer; padding: 4px; border-radius: 4px; color: #64748b; } .actionIconBtn:hover { background: #f1f5f9; color: #1e293b; }

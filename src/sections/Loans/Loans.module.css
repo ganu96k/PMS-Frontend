@@ -425,3 +425,5 @@
 .mathCard3D { flex: 1; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06), inset 0 2px 4px rgba(255,255,255,0.8); border: 1px solid #e2e8f0; border-bottom: 3px solid #cbd5e1; }
 .mathCard3D p { margin: 0 0 8px; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px; }
 .mathCard3D h3 { margin: 0; font-size: 28px; color: #1e293b; font-weight: 800; }
+
+.inlineEditGroup { display: flex; align-items: center; gap: 6px; padding: 4px; border-radius: 4px; border: 1px solid transparent; cursor: pointer; transition: all 0.2s; } .inlineEditGroup:hover { background: rgba(37,99,235,0.05); border-color: rgba(37,99,235,0.2); } .pencilIcon { opacity: 0; font-size: 12px; color: #64748b; transition: opacity 0.2s; } .inlineEditGroup:hover .pencilIcon { opacity: 1; } .actionIconBtn { background: none; border: none; font-size: 16px; cursor: pointer; padding: 4px; border-radius: 4px; color: #64748b; } .actionIconBtn:hover { background: #f1f5f9; color: #1e293b; }

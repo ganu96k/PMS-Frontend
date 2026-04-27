@@ -325,35 +325,51 @@ const ExpenseManagement = () => {
                       />
                     </td>
                     <td>{index + 1}</td>
-                    <td>{new Date(expense.expenseDate).toLocaleDateString()}</td>
                     <td>
-                      <span className={styles.categoryBadge}>
-                        {getCategoryName(expense.categoryId)}
-                      </span>
+                      <div className={styles.inlineEditGroup} onClick={() => handleEdit(expense)} title="Edit Date">
+                        <span>{new Date(expense.expenseDate).toLocaleDateString()}</span>
+                        <span className={styles.pencilIcon}>✎</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className={styles.inlineEditGroup} onClick={() => handleEdit(expense)} title="Edit Category">
+                        <span className={styles.categoryBadge}>{getCategoryName(expense.categoryId)}</span>
+                        <span className={styles.pencilIcon}>✎</span>
+                      </div>
                     </td>
                     <td className={styles.amount}>
-                      ₹{expense.amount?.toFixed(2) || "0.00"}
+                      <div className={styles.inlineEditGroup} onClick={() => handleEdit(expense)} title="Edit Amount">
+                        <span>₹{expense.amount?.toFixed(2) || "0.00"}</span>
+                        <span className={styles.pencilIcon}>✎</span>
+                      </div>
                     </td>
                     <td>
-                      <span className={styles.methodBadge}>
-                        {getPaymentMethodName(expense.paymentMethodId)}
-                      </span>
+                      <div className={styles.inlineEditGroup} onClick={() => handleEdit(expense)} title="Edit Payment Method">
+                        <span className={styles.methodBadge}>{getPaymentMethodName(expense.paymentMethodId)}</span>
+                        <span className={styles.pencilIcon}>✎</span>
+                      </div>
                     </td>
                     <td className={styles.description}>
-                      {expense.description || "-"}
+                      <div className={styles.inlineEditGroup} onClick={() => handleEdit(expense)} title="Edit Description">
+                        <span>{expense.description || "-"}</span>
+                        <span className={styles.pencilIcon}>✎</span>
+                      </div>
                     </td>
-                    <td className={styles.actions}>
+                    <td className={styles.actions} style={{ display: 'flex', gap: '8px' }}>
                       <button
-                        className={styles.editBtn}
+                        className={styles.actionIconBtn}
                         onClick={() => handleEdit(expense)}
+                        title="Edit Record"
                       >
-                        Edit
+                        ✎
                       </button>
                       <button
-                        className={styles.deleteItemBtn}
+                        className={styles.actionIconBtn}
+                        style={{ color: '#dc2626' }}
                         onClick={() => handleDelete(expense.id)}
+                        title="Delete Record"
                       >
-                        Delete
+                        🗑️
                       </button>
                     </td>
                   </tr>
