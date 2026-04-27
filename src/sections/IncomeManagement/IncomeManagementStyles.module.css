@@ -1,7 +1,6 @@
 .container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
-  padding: 20px;
+  width: 100%;
+  padding: 0;
 }
 
 .header {
@@ -59,8 +58,7 @@
 }
 
 .mainContent {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .errorMessage {
