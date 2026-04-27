@@ -28,19 +28,17 @@
 }
 
 .backBtn {
-  background: rgba(255, 255, 255, 0.2);
+  background: transparent;
   color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  padding: 6px 12px;
+  border-radius: 4px;
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .backBtn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateX(-3px);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .totalIncome {
@@ -91,39 +89,34 @@
 }
 
 .addBtn {
-  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+  background: #27ae60;
   color: #fff;
   border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
+  padding: 8px 16px;
+  border-radius: 4px;
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  font-weight: 500;
   display: flex;
   align-items: center;
   gap: 5px;
 }
 
 .addBtn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+  background: #219653;
 }
 
 .deleteBtn {
   background: #e74c3c;
   color: #fff;
   border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
+  padding: 8px 16px;
+  border-radius: 4px;
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .deleteBtn:hover {
-  transform: translateY(-2px);
   background: #c0392b;
-  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
 }
 
 .dateFilter {
@@ -203,34 +196,31 @@
 }
 
 .submitBtn {
-  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+  background: #27ae60;
   color: #fff;
   border: none;
-  padding: 12px 30px;
-  border-radius: 8px;
+  padding: 8px 24px;
+  border-radius: 4px;
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .submitBtn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+  background: #219653;
 }
 
 .cancelBtn {
-  background: #ecf0f1;
+  background: #f8f9fa;
   color: #2c3e50;
-  border: none;
-  padding: 12px 30px;
-  border-radius: 8px;
+  border: 1px solid #ced4da;
+  padding: 8px 24px;
+  border-radius: 4px;
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .cancelBtn:hover {
-  background: #bdc3c7;
+  background: #e9ecef;
 }
 
 /* Table Container */
@@ -309,13 +299,12 @@
 
 .editBtn,
 .deleteBtn {
-  padding: 6px 12px;
+  padding: 4px 10px;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   font-size: 12px;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .editBtn {
@@ -325,7 +314,6 @@
 
 .editBtn:hover {
   background: #2980b9;
-  transform: translateY(-2px);
 }
 
 .deleteBtn {
@@ -335,7 +323,6 @@
 
 .deleteBtn:hover {
   background: #c0392b;
-  transform: translateY(-2px);
 }
 
 .emptyRow {
