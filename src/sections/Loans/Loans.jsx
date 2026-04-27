@@ -388,6 +388,12 @@ function LoanDetail({ loan, onBack, onDelete }) {
     }
   };
 
+  // Computations
+  const totalEmiPrincipal = emis.reduce((sum, emi) => sum + parseFloat(emi.principalAmount || 0), 0);
+  const paidEmiPrincipal = emis.filter(e => e.status === 'PAID').reduce((sum, emi) => sum + parseFloat(emi.principalAmount || 0), 0);
+  const computedOutstanding = parseFloat(loan.principalAmount) - paidEmiPrincipal;
+  const paidCount = emis.filter(e => e.status === 'PAID').length;
+
   return (
     <div className={styles.detailContainer}>
       <button className={styles.backBtn} onClick={onBack}>
@@ -398,16 +404,30 @@ function LoanDetail({ loan, onBack, onDelete }) {
         {/* Left: Loan Details */}
         <div className={styles.detailLeft}>
           <div className={styles.detailCard}>
-            <h2>{loan.loanName}</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+               <h2 style={{ fontSize: '24px', margin: '0 0 16px', color: '#1e293b' }}>{loan.loanName}</h2>
+               <span className={`${styles.badge} ${styles[loan.status.toLowerCase()]}`} style={{ fontSize: '14px', padding: '6px 12px' }}>
+                  {loan.status}
+               </span>
+            </div>
+            
+            {/* 3D Dashboard Cards for Math */}
+            <div className={styles.mathCards}>
+               <div className={styles.mathCard3D}>
+                  <p>Paid Progress</p>
+                  <h3>{paidCount} <span style={{fontSize: '16px', color: '#64748b', fontWeight: '500'}}>out of {emis.length}</span></h3>
+                  <div style={{ background: '#e2e8f0', height: 6, borderRadius: 3, marginTop: 10 }}>
+                     <div style={{ background: '#2563eb', height: 6, borderRadius: 3, width: `${emis.length ? (paidCount/emis.length)*100 : 0}%` }} />
+                  </div>
+               </div>
+               <div className={styles.mathCard3D}>
+                  <p>Outstanding Amount</p>
+                  <h3 style={{ color: '#dc2626' }}>₹{Math.max(0, computedOutstanding).toFixed(2)}</h3>
+                  <small style={{ color: '#64748b' }}>Original: ₹{parseFloat(loan.principalAmount).toFixed(2)}</small>
+               </div>
+            </div>
+
             <div className={styles.detailGrid}>
-              <div className={styles.detailItem}>
-                <span className={styles.detailLabel}>Principal Amount</span>
-                <span className={styles.detailValue}>₹{parseFloat(loan.principalAmount).toFixed(2)}</span>
-              </div>
-              <div className={styles.detailItem}>
-                <span className={styles.detailLabel}>Outstanding Amount</span>
-                <span className={styles.detailValue}>₹{parseFloat(loan.outstandingAmount).toFixed(2)}</span>
-              </div>
               <div className={styles.detailItem}>
                 <span className={styles.detailLabel}>Interest Rate</span>
                 <span className={styles.detailValue}>{loan.interestRate}%</span>
@@ -419,14 +439,6 @@ function LoanDetail({ loan, onBack, onDelete }) {
               <div className={styles.detailItem}>
                 <span className={styles.detailLabel}>Due Date</span>
                 <span className={styles.detailValue}>{new Date(loan.dueDate).toLocaleDateString()}</span>
-              </div>
-              <div className={styles.detailItem}>
-                <span className={styles.detailLabel}>Status</span>
-                <span
-                  className={`${styles.badge} ${styles[loan.status.toLowerCase()]}`}
-                >
-                  {loan.status}
-                </span>
               </div>
             </div>
             {loan.notes && (
