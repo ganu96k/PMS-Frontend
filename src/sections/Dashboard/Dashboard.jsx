@@ -46,7 +46,7 @@ export default function Dashboard() {
         fetch(`${API}/incomes/user/${userId}`).then(r => r.ok ? r.json() : []).catch(() => []),
         fetch(`${API}/expenses/user/${userId}`).then(r => r.ok ? r.json() : []).catch(() => []),
         fetch(`${API}/tasks/user/${userId}`).then(r => r.ok ? r.json() : []).catch(() => []),
-        fetch(`${API}/loans`).then(r => r.ok ? r.json() : []).catch(() => []),
+        fetch(`${API}/loans/user/${userId}`).then(r => r.ok ? r.json() : []).catch(() => []), 
       ]);
       setData({
         incomes: incRes.status === 'fulfilled' ? (incRes.value || []) : [],
@@ -79,7 +79,7 @@ export default function Dashboard() {
   };
 
   const filteredIncomes  = filterByPeriod(data.incomes,  'incomeDate');
-  const filteredExpenses = filterByPeriod(data.expenses, 'expense_date');
+  const filteredExpenses = filterByPeriod(data.expenses, 'expenseDate');
 
   const totalIncome   = filteredIncomes.reduce((s, i)  => s + (i.amount  || 0), 0);
   const totalExpenses = filteredExpenses.reduce((s, e) => s + (e.amount  || 0), 0);
@@ -104,7 +104,7 @@ export default function Dashboard() {
   ];
 
   const sortFn = (a, b, f) => sortDir === 'desc' ? new Date(b[f]) - new Date(a[f]) : new Date(a[f]) - new Date(b[f]);
-  const recentExpenses = [...filteredExpenses].sort((a, b) => sortFn(a, b, 'expense_date')).slice(0, 5);
+  const recentExpenses = [...filteredExpenses].sort((a, b) => sortFn(a, b, 'expenseDate')).slice(0, 5);
   const recentIncomes  = [...filteredIncomes].sort((a, b)  => sortFn(a, b, 'incomeDate')).slice(0, 5);
 
   const fmt = n => `₹${(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
@@ -233,7 +233,7 @@ export default function Dashboard() {
                       <thead><tr><th>Date</th><th>Description</th><th>Amount</th></tr></thead>
                       <tbody>{recentExpenses.map(e => (
                         <tr key={e.id}>
-                          <td>{e.expense_date}</td>
+                          <td>{e.expenseDate}</td>
                           <td>{e.description || '—'}</td>
                           <td className={styles.redText}>{fmt(e.amount)}</td>
                         </tr>

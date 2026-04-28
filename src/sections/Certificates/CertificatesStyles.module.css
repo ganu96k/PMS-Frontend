@@ -1,273 +1,328 @@
 .certificatesSection {
   width: 100%;
-  padding: 80px 20px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+  padding: 100px 20px;
+  background: #f0f2f5;
   min-height: 100vh;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
 }
 
-.sectionTitle {
-  font-size: 3rem;
-  font-weight: 700;
-  color: #1a1a1a;
+.headerArea {
   text-align: center;
-  margin-bottom: 10px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  margin-bottom: 60px;
+}
+
+.sectionTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.titleUnderline {
+  width: 80px;
+  height: 4px;
+  background: #2563eb;
+  margin: 0 auto 20px;
+  border-radius: 2px;
 }
 
 .sectionSubtitle {
-  text-align: center;
-  color: #666;
-  font-size: 1.2rem;
-  margin-bottom: 50px;
-  font-weight: 300;
+  color: #64748b;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .certificatesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
-  margin-top: 40px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 30px;
 }
 
 .certificateCard {
   background: white;
-  border-radius: 12px;
-  padding: 30px 25px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  text-align: center;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  border-top: 4px solid #667eea;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
 }
 
 .certificateCard:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border-color: #2563eb;
 }
 
-.cardIcon {
-  font-size: 3rem;
-  margin-bottom: 15px;
-  display: inline-block;
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.certIcon {
+  font-size: 2rem;
+  background: #f1f5f9;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.issuerTag {
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
 .certTitle {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: #1a1a1a;
-  margin: 15px 0 10px 0;
-}
-
-.issuer {
-  color: #667eea;
-  font-weight: 600;
-  margin: 8px 0;
-  font-size: 0.95rem;
+  color: #0f172a;
+  margin-bottom: 12px;
+  line-height: 1.4;
 }
 
 .description {
-  color: #666;
+  color: #475569;
   font-size: 0.9rem;
-  margin: 15px 0;
-  line-height: 1.5;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  flex-grow: 1;
 }
 
 .cardFooter {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 20px;
-  padding-top: 15px;
-  border-top: 1px solid #eee;
-  gap: 10px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 16px;
 }
 
-.date {
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.85rem;
+.metaInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.dateLabel {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dateValue {
+  font-size: 0.9rem;
   font-weight: 600;
+  color: #334155;
 }
 
 .viewBtn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #2563eb;
   color: white;
   border: none;
-  padding: 8px 15px;
-  border-radius: 20px;
-  font-size: 0.85rem;
+  padding: 8px 16px;
+  border-radius: 8px;
   font-weight: 600;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background 0.2s;
 }
 
 .viewBtn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  background: #1d4ed8;
 }
 
-/* Modal Styles */
+/* Modal Layout */
 .modalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  inset: 0;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(4px);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
   padding: 20px;
 }
 
 .modal {
   background: white;
-  border-radius: 12px;
-  max-width: 600px;
   width: 100%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 1100px;
+  height: 90vh;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  animation: slideIn 0.3s ease;
+  animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+@keyframes modalPop {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 .modalHeader {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 25px;
+  padding: 20px 30px;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.modalHeader h2 {
-  margin: 0;
+.modalTitleArea h2 {
   font-size: 1.5rem;
+  color: #0f172a;
+  margin: 0 0 4px;
+}
+
+.modalIssuer {
+  font-size: 0.85rem;
+  color: #2563eb;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.modalIssuer::before {
+  content: '✓';
+  background: #2563eb;
+  color: white;
+  width: 14px;
+  height: 14px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 }
 
 .closeBtn {
-  background: rgba(255, 255, 255, 0.2);
+  background: #f1f5f9;
   border: none;
-  color: white;
-  font-size: 1.5rem;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   cursor: pointer;
-  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  transition: all 0.2s;
 }
 
 .closeBtn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
-.modalBody {
-  padding: 25px;
-}
-
-.modalBody p {
-  margin: 12px 0;
-  color: #666;
-  line-height: 1.6;
-}
-
-.modalBody strong {
-  color: #1a1a1a;
-}
-
-.pdfPreviewNote {
-  color: #667eea;
-  font-style: italic;
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
-
-.pdfPlaceholder {
-  background: #f5f7fa;
-  border: 2px dashed #667eea;
-  border-radius: 8px;
-  padding: 40px 20px;
-  text-align: center;
-  color: #667eea;
-  margin: 20px 0;
-}
-
-.pdfPlaceholder p {
-  margin: 10px 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.smallText {
-  font-size: 0.85rem;
-  color: #999;
-}
-
-.modalFooter {
-  padding: 20px 25px;
-  border-top: 1px solid #eee;
-  display: flex;
-  gap: 10px;
-}
-
-.downloadBtn {
+.modalContent {
   flex: 1;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 8px;
+  display: flex;
+  overflow: hidden;
+}
+
+.certSidebar {
+  width: 280px;
+  padding: 30px;
+  background: #f8fafc;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.sidebarItem label {
+  display: block;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.sidebarItem span {
   font-size: 1rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  color: #1e293b;
 }
 
-.downloadBtn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+.statusBadge {
+  color: #10b981 !important;
+  background: #d1fae5;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem !important;
 }
 
-@media (max-width: 768px) {
-  .sectionTitle {
-    font-size: 2rem;
-  }
+.downloadLink {
+  margin-top: auto;
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 600;
+  color: #334155;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
 
-  .certificatesGrid {
-    grid-template-columns: 1fr;
-  }
+.downloadLink:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+  background: #eff6ff;
+}
 
-  .modal {
-    max-width: 90%;
-  }
+.pdfContainer {
+  flex: 1;
+  background: #525659;
+  display: flex;
+  flex-direction: column;
+}
 
-  .cardFooter {
+.pdfIframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+@media (max-width: 900px) {
+  .modalContent {
     flex-direction: column;
   }
-
-  .viewBtn {
+  .certSidebar {
     width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 15px 30px;
+    gap: 20px;
+  }
+  .downloadLink {
+    margin-top: 0;
   }
 }
+
+@media (max-width: 640px) {
+  .sectionTitle { font-size: 2rem; }
+  .certSidebar { padding: 15px; }
+  .sidebarItem { flex: 1 1 120px; }
+}
+

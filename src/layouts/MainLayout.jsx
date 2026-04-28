@@ -18,6 +18,7 @@ export default function MainLayout({ children }) {
     { label: 'Tasks',     path: '/tasks',     icon: '📋' },
     { label: 'Loans',     path: '/loans',     icon: '🏦' },
     { label: 'Reports',   path: '/reports',   icon: '📈' },
+    { label: 'Certificates', path: '/certificates', icon: '📜' },
     { label: 'Settings',  path: '/settings',  icon: '⚙️' },
   ];
 

@@ -4,6 +4,7 @@ import MainLayout from '../../layouts/MainLayout';
 import styles from './Loans.module.css';
 
 export default function Loans() {
+  const userId = localStorage.getItem('userId') || 1;
   const [loans, setLoans] = useState([]);
   const [selectedLoan, setSelectedLoan] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -35,7 +36,7 @@ export default function Loans() {
 
       // 2. Fetch fresh data from Server in background
       const token = localStorage.getItem('authToken');
-      const response = await axios.get('http://localhost:8080/api/loans', {
+      const response = await axios.get(`http://localhost:8080/api/loans/user/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       

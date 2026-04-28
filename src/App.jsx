@@ -83,6 +83,7 @@ function App() {
         <Route path="/loans"     element={<PrivateRoute><Loans /></PrivateRoute>} />
         <Route path="/reports"   element={<PrivateRoute><Reports /></PrivateRoute>} />
         <Route path="/settings"  element={<PrivateRoute><Settings /></PrivateRoute>} />
+        <Route path="/certificates" element={<PrivateRoute><MainLayout><Certificates /></MainLayout></PrivateRoute>} />
         <Route path="/salesforce" element={<PrivateRoute><Salesforce /></PrivateRoute>} />
         {/* Redirect unknown routes to dashboard if logged in */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

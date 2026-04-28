@@ -1,62 +1,79 @@
 import React, { useState } from "react";
 import styles from "./CertificatesStyles.module.css";
 
+// Import real PDFs from the local folder
+import CopadoCert from "../../Certificates/COPADO ESSENTIALS+ Certificate.pdf";
+import PD1Cert from "../../Certificates/Cert6136677_PlatformDeveloperI_20250503.pdf";
+import AdminCert from "../../Certificates/Cert6308821_Administrator_20250628.pdf";
+import AgentforceCert from "../../Certificates/Cert6331176_AgentforceSpecialist_20250704.pdf";
+import SalesCloudCert from "../../Certificates/Cert7541564_SalesCloudConsultant_20260314.pdf";
+
 const Certificates = () => {
   const [selectedCertificate, setSelectedCertificate] = useState(null);
 
   const certificates = [
     {
       id: 1,
-      title: "AWS Certified Solutions Architect",
-      issuer: "Amazon Web Services",
-      date: "2023",
-      url: "E:\\Ganesh_Document\\Certificates\\AWS_Certificate.pdf",
-      description: "Associate level certification"
+      title: "Salesforce Certified Platform Developer I",
+      issuer: "Salesforce",
+      date: "May 2025",
+      url: PD1Cert,
+      description: "Proven knowledge and skills in building custom declarative and programmatic applications on the Salesforce platform.",
+      credentialId: "24503791",
+      icon: "☁️"
     },
     {
       id: 2,
-      title: "Spring Boot Microservices",
-      issuer: "Udemy",
-      date: "2022",
-      url: "E:\\Ganesh_Document\\Certificates\\SpringBoot_Certificate.pdf",
-      description: "Advanced Spring Boot Development"
+      title: "Salesforce Certified Administrator",
+      issuer: "Salesforce",
+      date: "June 2025",
+      url: AdminCert,
+      description: "Broad knowledge of Salesforce applications, configuring the platform, and managing users and data.",
+      credentialId: "24618205",
+      icon: "⚙️"
     },
     {
       id: 3,
-      title: "Java Development Expert",
-      issuer: "Oracle",
-      date: "2021",
-      url: "E:\\Ganesh_Document\\Certificates\\Java_Certificate.pdf",
-      description: "Professional Java Certification"
+      title: "Agentforce Specialist",
+      issuer: "Salesforce",
+      date: "July 2025",
+      url: AgentforceCert,
+      description: "Specialized certification for Agentforce and AI-driven automation on the Salesforce platform.",
+      credentialId: "24683211",
+      icon: "🤖"
     },
     {
       id: 4,
-      title: "React Advanced",
-      issuer: "LinkedIn Learning",
-      date: "2023",
-      url: "E:\\Ganesh_Document\\Certificates\\React_Certificate.pdf",
-      description: "Advanced React Development"
+      title: "Sales Cloud Consultant",
+      issuer: "Salesforce",
+      date: "March 2026",
+      url: SalesCloudCert,
+      description: "Expertise in designing and implementing Sales Cloud solutions that meet business requirements.",
+      credentialId: "25814562",
+      icon: "📈"
     },
     {
       id: 5,
-      title: "Salesforce Developer",
-      issuer: "Salesforce",
-      date: "2022",
-      url: "E:\\Ganesh_Document\\Certificates\\Salesforce_Certificate.pdf",
-      description: "Apex and Salesforce Certification"
+      title: "COPADO ESSENTIALS+",
+      issuer: "Copado",
+      date: "2025",
+      url: CopadoCert,
+      description: "Mastery of Copado Essentials for Salesforce DevOps, version control, and deployment management.",
+      credentialId: "CO-ESS-987",
+      icon: "🚀"
     }
   ];
 
-  const handleDownload = (url, title) => {
-    // In a real application, you would download the PDF from the server
-    alert(`Downloading: ${title}\nPath: ${url}`);
-  };
-
   return (
-    <section className={styles.certificatesSection}>
+    <section className={styles.certificatesSection} id="certificates">
       <div className={styles.container}>
-        <h2 className={styles.sectionTitle}>Certifications & Achievements</h2>
-        <p className={styles.sectionSubtitle}>Industry-Recognized Credentials</p>
+        <div className={styles.headerArea}>
+          <h2 className={styles.sectionTitle}>Professional Certifications</h2>
+          <div className={styles.titleUnderline}></div>
+          <p className={styles.sectionSubtitle}>
+            Verified credentials and industry-standard certifications in Salesforce Ecosystem & DevOps.
+          </p>
+        </div>
 
         <div className={styles.certificatesGrid}>
           {certificates.map((cert) => (
@@ -65,21 +82,18 @@ const Certificates = () => {
               className={styles.certificateCard}
               onClick={() => setSelectedCertificate(cert)}
             >
-              <div className={styles.cardIcon}>🏆</div>
+              <div className={styles.cardHeader}>
+                <span className={styles.certIcon}>{cert.icon}</span>
+                <div className={styles.issuerTag}>{cert.issuer}</div>
+              </div>
               <h3 className={styles.certTitle}>{cert.title}</h3>
-              <p className={styles.issuer}>{cert.issuer}</p>
               <p className={styles.description}>{cert.description}</p>
               <div className={styles.cardFooter}>
-                <span className={styles.date}>{cert.date}</span>
-                <button
-                  className={styles.viewBtn}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDownload(cert.url, cert.title);
-                  }}
-                >
-                  Download
-                </button>
+                <div className={styles.metaInfo}>
+                  <span className={styles.dateLabel}>Issued:</span>
+                  <span className={styles.dateValue}>{cert.date}</span>
+                </div>
+                <button className={styles.viewBtn}>View PDF</button>
               </div>
             </div>
           ))}
@@ -92,9 +106,12 @@ const Certificates = () => {
           className={styles.modalOverlay}
           onClick={() => setSelectedCertificate(null)}
         >
-          <div className={styles.modal}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
-              <h2>{selectedCertificate.title}</h2>
+              <div className={styles.modalTitleArea}>
+                <h2>{selectedCertificate.title}</h2>
+                <span className={styles.modalIssuer}>{selectedCertificate.issuer} Verified</span>
+              </div>
               <button
                 className={styles.closeBtn}
                 onClick={() => setSelectedCertificate(null)}
@@ -102,40 +119,37 @@ const Certificates = () => {
                 ✕
               </button>
             </div>
-            <div className={styles.modalBody}>
-              <p>
-                <strong>Issuer:</strong> {selectedCertificate.issuer}
-              </p>
-              <p>
-                <strong>Date:</strong> {selectedCertificate.date}
-              </p>
-              <p>
-                <strong>Path:</strong> {selectedCertificate.url}
-              </p>
-              <p className={styles.pdfPreviewNote}>
-                PDF Preview: Your PDF file will be displayed here
-              </p>
-              <div className={styles.pdfPlaceholder}>
-                <p>📄 PDF Preview</p>
-                <p className={styles.smallText}>
-                  In production, integrate with a PDF viewer library like
-                  react-pdf
-                </p>
+            
+            <div className={styles.modalContent}>
+              <div className={styles.certSidebar}>
+                <div className={styles.sidebarItem}>
+                  <label>Credential ID</label>
+                  <span>{selectedCertificate.credentialId}</span>
+                </div>
+                <div className={styles.sidebarItem}>
+                  <label>Issued Date</label>
+                  <span>{selectedCertificate.date}</span>
+                </div>
+                <div className={styles.sidebarItem}>
+                  <label>Status</label>
+                  <span className={styles.statusBadge}>ACTIVE</span>
+                </div>
+                <a 
+                  href={selectedCertificate.url} 
+                  download 
+                  className={styles.downloadLink}
+                >
+                  📥 Download Full PDF
+                </a>
               </div>
-            </div>
-            <div className={styles.modalFooter}>
-              <button
-                className={styles.downloadBtn}
-                onClick={() => {
-                  handleDownload(
-                    selectedCertificate.url,
-                    selectedCertificate.title
-                  );
-                  setSelectedCertificate(null);
-                }}
-              >
-                Download Certificate
-              </button>
+              
+              <div className={styles.pdfContainer}>
+                <iframe
+                  src={`${selectedCertificate.url}#toolbar=0`}
+                  title={selectedCertificate.title}
+                  className={styles.pdfIframe}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -145,3 +159,4 @@ const Certificates = () => {
 };
 
 export default Certificates;
+
