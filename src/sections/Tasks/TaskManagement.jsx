@@ -140,12 +140,28 @@ const TaskManagement = () => {
   const inProgressTasks = tasks.filter(t => t.status === "IN_PROGRESS");
   const completedTasks = tasks.filter(t => t.status === "COMPLETED");
 
+  const getCalendarUrl = (task) => {
+    const title = encodeURIComponent(`Task: ${task.title}`);
+    const details = encodeURIComponent(task.description || "");
+    const date = task.dueDate.replace(/-/g, "");
+    return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&dates=${date}/${date}`;
+  };
+
+  const getWhatsAppUrl = (task) => {
+    const msg = encodeURIComponent(`📌 *Task Reminder*\n\n*Title:* ${task.title}\n*Due:* ${task.dueDate}\n*Status:* ${task.status}\n\n_Sent via FinFlow Portfolio_`);
+    return `https://wa.me/?text=${msg}`;
+  };
+
   const TaskCard = ({ task }) => (
     <div className={`${styles.taskCard} ${task.status === 'COMPLETED' ? styles.completed : ''} ${task.priority === 'HIGH' ? styles.highPriority : ''}`}>
       <div className={styles.taskHeader}>
-        <span className={`${styles.priorityBadge} ${styles[task.priority.toLowerCase()]}`}>
-          {task.priority}
-        </span>
+        <div style={{ display: 'flex', gap: '4px' }}>
+          <span className={`${styles.priorityBadge} ${styles[task.priority.toLowerCase()]}`}>
+            {task.priority}
+          </span>
+          <a href={getCalendarUrl(task)} target="_blank" rel="noreferrer" className={styles.iconAction} title="Add to Calendar">📅</a>
+          <a href={getWhatsAppUrl(task)} target="_blank" rel="noreferrer" className={styles.iconAction} title="Share on WhatsApp">💬</a>
+        </div>
         <span className={styles.date}>{task.dueDate}</span>
       </div>
       <h3>{task.title}</h3>
