@@ -129,19 +129,6 @@ export default function Loans() {
     }
   };
 
-  const getCalendarUrl = (loan, emi = null) => {
-    const title = encodeURIComponent(emi ? `EMI Payment: ${loan.loanName} (#${emi.emiNumber})` : `Loan Due: ${loan.loanName}`);
-    const details = encodeURIComponent(emi ? `EMI amount due for ${loan.loanName}` : `Final due date for ${loan.loanName}`);
-    const date = (emi ? emi.dueDate : loan.dueDate).replace(/-/g, "").split('T')[0];
-    return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&dates=${date}/${date}`;
-  };
-
-  const getWhatsAppUrl = (loan, emi = null) => {
-    const amount = emi ? emi.totalAmount : loan.outstandingAmount;
-    const msg = encodeURIComponent(`🏦 *FinFlow Loan Alert*\n\n*Loan:* ${loan.loanName}\n*Type:* ${emi ? 'EMI Payment' : 'Loan Overview'}\n*Amount:* ₹${parseFloat(amount).toLocaleString('en-IN')}\n*Due:* ${emi ? emi.dueDate : loan.dueDate}\n\n_Sent via Portfolio PMS_`);
-    return `https://wa.me/?text=${msg}`;
-  };
-
   return (
     <MainLayout>
       <div className={styles.container}>
@@ -293,7 +280,6 @@ export default function Loans() {
                       <th>Interest Rate</th>
                       <th>Status</th>
                       <th>Due Date</th>
-                      <th>Integration</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -337,10 +323,6 @@ export default function Loans() {
                             <span>{new Date(loan.dueDate).toLocaleDateString()}</span>
                             <span className={styles.pencilIcon}>✎</span>
                           </div>
-                        </td>
-                        <td style={{ display: 'flex', gap: '8px' }}>
-                          <a href={getCalendarUrl(loan)} target="_blank" rel="noreferrer" className={styles.iconAction} title="Add to Calendar">📅</a>
-                          <a href={getWhatsAppUrl(loan)} target="_blank" rel="noreferrer" className={styles.iconAction} title="Share on WhatsApp">💬</a>
                         </td>
                         <td style={{ display: 'flex', gap: '8px' }}>
                           <button
@@ -533,7 +515,6 @@ function LoanDetail({ loan, onBack, onDelete }) {
                     <th>Interest</th>
                     <th>Total</th>
                     <th>Status</th>
-                    <th>Share</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -574,10 +555,6 @@ function LoanDetail({ loan, onBack, onDelete }) {
                           </span>
                           <span className={styles.pencilIcon}>✎</span>
                         </div>
-                      </td>
-                      <td style={{ display: 'flex', gap: '8px' }}>
-                        <a href={getCalendarUrl(loan, emi)} target="_blank" rel="noreferrer" className={styles.iconAction} title="Add to Calendar">📅</a>
-                        <a href={getWhatsAppUrl(loan, emi)} target="_blank" rel="noreferrer" className={styles.iconAction} title="Share on WhatsApp">💬</a>
                       </td>
                     </tr>
                   ))}
