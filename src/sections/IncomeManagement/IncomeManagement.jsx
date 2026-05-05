@@ -1,6 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./IncomeManagementStyles.module.css";
+
+const DEFAULT_INCOME_CATEGORIES = [
+  { id: 1, name: "Salary" },
+  { id: 2, name: "Freelance" },
+  { id: 3, name: "Investment" },
+  { id: 4, name: "Bonus" },
+  { id: 5, name: "Other" },
+];
 
 const IncomeManagement = () => {
   const navigate = useNavigate();
@@ -13,14 +21,6 @@ const IncomeManagement = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
 
-  const defaultIncomeCategories = [
-    { id: 1, name: "Salary" },
-    { id: 2, name: "Freelance" },
-    { id: 3, name: "Investment" },
-    { id: 4, name: "Bonus" },
-    { id: 5, name: "Other" },
-  ];
-
   // Form state
   const [formData, setFormData] = useState({
     id: null,
@@ -30,11 +30,7 @@ const IncomeManagement = () => {
     description: "",
   });
 
-  useEffect(() => {
-    fetchData();
-  }, [userId]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       // Try to fetch incomes from backend
       try {
@@ -103,7 +99,7 @@ const IncomeManagement = () => {
         ]);
       }
 
-      setIncomeCategories(defaultIncomeCategories);
+      setIncomeCategories(DEFAULT_INCOME_CATEGORIES);
       setError("");
     } catch (err) {
       setError("Failed to load data");
@@ -111,7 +107,11 @@ const IncomeManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

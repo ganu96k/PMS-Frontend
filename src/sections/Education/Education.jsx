@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "./EducationStyles.module.css";
 
 const Education = () => {

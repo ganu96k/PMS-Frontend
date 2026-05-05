@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import MainLayout from '../../layouts/MainLayout';
 import styles from './Reports.module.css';
@@ -14,14 +14,22 @@ export default function Reports() {
     lowestExpense: 0,
   });
 
-  useEffect(() => {
-    fetchReports();
-  }, [reportType]);
-
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('authToken');
+      if (!token) {
+        setSummaries([]);
+        setStats({
+          totalSpent: 0,
+          avgTransaction: 0,
+          highestExpense: 0,
+          lowestExpense: 0,
+        });
+        setLoading(false);
+        return;
+      }
+
       const endpoint = `http://localhost:8080/api/reports/${reportType}`;
       
       const response = await axios.get(endpoint, {
@@ -44,6 +52,13 @@ export default function Reports() {
           highestExpense: highest,
           lowestExpense: lowest,
         });
+      } else {
+        setStats({
+          totalSpent: 0,
+          avgTransaction: 0,
+          highestExpense: 0,
+          lowestExpense: 0,
+        });
       }
 
       setLoading(false);
@@ -51,7 +66,11 @@ export default function Reports() {
       console.error('Error fetching reports:', error);
       setLoading(false);
     }
-  };
+  }, [reportType]);
+
+  useEffect(() => {
+    fetchReports();
+  }, [fetchReports]);
 
   const handleGenerateReports = async () => {
     try {
@@ -68,7 +87,7 @@ export default function Reports() {
   };
 
   const chartData = summaries.slice(0, 6);
-  const maxAmount = Math.max(...chartData.map((s) => Number(s.totalAmount)));
+  const maxAmount = Math.max(1, ...chartData.map((summary) => Number(summary.totalAmount) || 0));
   const chartHeight = 300;
 
   return (

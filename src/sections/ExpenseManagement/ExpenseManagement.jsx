@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./ExpenseManagementStyles.module.css";
 
@@ -24,11 +24,7 @@ const ExpenseManagement = () => {
     description: "",
   });
 
-  useEffect(() => {
-    fetchData();
-  }, [userId]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       // 1. Check Browser Cache for instant load
       const cachedData = sessionStorage.getItem(`cached_expenses_data_${userId}`);
@@ -68,7 +64,11 @@ const ExpenseManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

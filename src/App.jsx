@@ -6,6 +6,7 @@ const Login        = lazy(() => import("./sections/Login/Login"));
 const Dashboard    = lazy(() => import("./sections/Dashboard/Dashboard"));
 const Reports      = lazy(() => import("./sections/Reports/Reports"));
 const ExpenseManagement = lazy(() => import("./sections/ExpenseManagement/ExpenseManagement"));
+const BudgetManagement  = lazy(() => import("./sections/BudgetManagement/BudgetManagement"));
 const IncomeManagement  = lazy(() => import("./sections/IncomeManagement/IncomeManagement"));
 const TaskManagement    = lazy(() => import("./sections/Tasks/TaskManagement"));
 const Loans             = lazy(() => import("./sections/Loans/Loans"));
@@ -21,6 +22,7 @@ const Education         = lazy(() => import("./sections/Education/Education"));
 const Certificates      = lazy(() => import("./sections/Certificates/Certificates"));
 const Assets            = lazy(() => import("./sections/Assets/Assets"));
 const Salesforce        = lazy(() => import("./sections/Salesforce/Salesforce"));
+const MainLayout       = lazy(() => import("./layouts/MainLayout"));
 
 // Page loader animation
 function PageLoader() {
@@ -78,6 +80,7 @@ function App() {
         <Route path="/register" element={<Registration />} />
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/expenses"  element={<PrivateRoute><ExpenseManagement /></PrivateRoute>} />
+        <Route path="/budgets"   element={<PrivateRoute><BudgetManagement /></PrivateRoute>} />
         <Route path="/income"    element={<PrivateRoute><IncomeManagement /></PrivateRoute>} />
         <Route path="/tasks"     element={<PrivateRoute><TaskManagement /></PrivateRoute>} />
         <Route path="/loans"     element={<PrivateRoute><Loans /></PrivateRoute>} />

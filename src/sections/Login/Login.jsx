@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./LoginStyles.module.css";
 
 const Login = () => {
   const [email, setEmail] = useState("admin@admin.com");
-  const [password, setPassword] = useState("admin@123");
+  const [password, setPassword] = useState("admin123");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -26,11 +26,22 @@ const Login = () => {
       const data = await response.json();
 
       if (data.success) {
+        sessionStorage.clear();
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("userId", data.userId);
         localStorage.setItem("userEmail", data.email);
         localStorage.setItem("userName", `${data.firstName} ${data.lastName}`);
         localStorage.setItem("userRole", data.role);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: data.userId,
+            email: data.email,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            role: data.role,
+          })
+        );
         navigate("/dashboard");
       } else {
         setError(data.message || "Login failed");
@@ -89,7 +100,7 @@ const Login = () => {
         <div className={styles.defaultCredentials}>
           <p>📝 Demo Credentials:</p>
           <p><strong>Email:</strong> admin@admin.com</p>
-          <p><strong>Password:</strong> admin@123</p>
+          <p><strong>Password:</strong> admin123</p>
         </div>
       </div>
 

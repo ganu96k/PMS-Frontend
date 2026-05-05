@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styles from "./CertificatesStyles.module.css";
 
 // Import real PDFs from the local folder

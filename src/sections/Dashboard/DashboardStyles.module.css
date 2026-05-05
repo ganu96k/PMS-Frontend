@@ -128,7 +128,7 @@
 /* ── Stat Cards ──────────────────────────── */
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 14px;
 }
 .statCard {
@@ -332,8 +332,37 @@
 /* ── Bottom Grid ─────────────────────────── */
 .bottomGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 14px;
+}
+
+.budgetSummary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.budgetStat {
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.budgetStat span {
+  font-size: 11px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.budgetStat strong {
+  font-size: 16px;
+  color: #1e293b;
 }
 
 /* ── Tables ──────────────────────────────── */
@@ -409,11 +438,8 @@
 
 /* ── Responsive ──────────────────────────── */
 @media (max-width: 1100px) {
-  .statsGrid  { grid-template-columns: repeat(2, 1fr); }
   .midGrid    { grid-template-columns: 1fr; }
-  .bottomGrid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 700px) {
-  .statsGrid  { grid-template-columns: 1fr 1fr; }
-  .bottomGrid { grid-template-columns: 1fr; }
+  .budgetSummary { grid-template-columns: 1fr; }
 }

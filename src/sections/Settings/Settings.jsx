@@ -1,9 +1,34 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import MainLayout from '../../layouts/MainLayout';
 import styles from './Settings.module.css';
 
+function getStoredUser() {
+  const storedUser = localStorage.getItem('user');
+  const fallbackName = localStorage.getItem('userName') || '';
+  const [firstName = '', ...lastNameParts] = fallbackName.split(' ');
+  const fallbackUser = {
+    email: localStorage.getItem('userEmail') || '',
+    firstName,
+    lastName: lastNameParts.join(' '),
+    role: localStorage.getItem('userRole') || 'USER',
+  };
+
+  if (!storedUser) {
+    return fallbackUser;
+  }
+
+  try {
+    return {
+      ...fallbackUser,
+      ...JSON.parse(storedUser),
+    };
+  } catch {
+    return fallbackUser;
+  }
+}
+
 export default function Settings() {
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const user = getStoredUser();
   const [currency, setCurrency] = useState(localStorage.getItem('currency') || 'INR');
   const [dateFormat, setDateFormat] = useState(localStorage.getItem('dateFormat') || 'dd-mm-yyyy');
   const [saved, setSaved] = useState(false);
@@ -17,6 +42,7 @@ export default function Settings() {
 
   const handleClearData = () => {
     if (window.confirm('This will log you out. Continue?')) {
+      sessionStorage.clear();
       localStorage.clear();
       window.location.href = '/login';
     }

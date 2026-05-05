@@ -1,145 +1,213 @@
-import React, { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import MainLayout from '../../layouts/MainLayout';
 import styles from './Loans.module.css';
 
-export default function Loans() {
-  const userId = localStorage.getItem('userId') || 1;
-  const [loans, setLoans] = useState([]);
-  const [selectedLoan, setSelectedLoan] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-
-  const [formData, setFormData] = useState({
+function getInitialFormData() {
+  return {
     loanName: '',
     principalAmount: '',
+    outstandingAmount: '',
     interestRate: '',
     startDate: new Date().toISOString().split('T')[0],
     dueDate: '',
     status: 'ACTIVE',
     notes: '',
-  });
+  };
+}
 
-  useEffect(() => {
-    fetchLoans();
-  }, []);
+function mapLoanToFormData(loan) {
+  return {
+    loanName: loan.loanName || '',
+    principalAmount: loan.principalAmount ?? '',
+    outstandingAmount: loan.outstandingAmount ?? '',
+    interestRate: loan.interestRate ?? '',
+    startDate: loan.startDate ? new Date(loan.startDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    dueDate: loan.dueDate ? new Date(loan.dueDate).toISOString().split('T')[0] : '',
+    status: loan.status || 'ACTIVE',
+    notes: loan.notes || '',
+  };
+}
 
-  const fetchLoans = async () => {
+function buildLoanPayload(formData) {
+  return {
+    loanName: formData.loanName,
+    principalAmount: formData.principalAmount,
+    outstandingAmount: formData.outstandingAmount === '' ? null : formData.outstandingAmount,
+    interestRate: formData.interestRate,
+    startDate: formData.startDate,
+    dueDate: formData.dueDate,
+    status: formData.status,
+    notes: formData.notes,
+  };
+}
+
+function getCalendarUrl(loan, emi = null) {
+  const title = encodeURIComponent(
+    emi ? `EMI Payment: ${loan.loanName} (#${emi.emiNumber})` : `Loan Due: ${loan.loanName}`
+  );
+  const details = encodeURIComponent(
+    emi ? `EMI amount due for ${loan.loanName}` : `Final due date for ${loan.loanName}`
+  );
+  const dateSource = emi ? emi.dueDate : loan.dueDate;
+  const date = String(dateSource || '').replace(/-/g, '').split('T')[0];
+  return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&dates=${date}/${date}`;
+}
+
+function getWhatsAppUrl(loan, emi = null) {
+  const amount = emi ? emi.totalAmount : loan.outstandingAmount;
+  const message = encodeURIComponent(
+    `FinFlow Loan Alert\n\nLoan: ${loan.loanName}\nType: ${emi ? 'EMI Payment' : 'Loan Overview'}\nAmount: ₹${parseFloat(amount || 0).toLocaleString(
+      'en-IN'
+    )}\nDue: ${emi ? emi.dueDate : loan.dueDate}\n\nSent via Portfolio PMS`
+  );
+  return `https://wa.me/?text=${message}`;
+}
+
+export default function Loans() {
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const userId = Number(user.id || localStorage.getItem('userId') || 0);
+  const [loans, setLoans] = useState([]);
+  const [selectedLoan, setSelectedLoan] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [formData, setFormData] = useState(getInitialFormData());
+
+  const cacheKey = `cached_loans_${userId}`;
+
+  const fetchLoans = useCallback(async () => {
+    if (!userId) {
+      setLoans([]);
+      setLoading(false);
+      setError('User session is incomplete. Please login again.');
+      return;
+    }
+
     try {
-      // 1. Instantly load from Browser Cache (sessionStorage)
-      const cachedLoans = sessionStorage.getItem('cached_loans');
+      const cachedLoans = sessionStorage.getItem(cacheKey);
       if (cachedLoans) {
         setLoans(JSON.parse(cachedLoans));
         setLoading(false);
       }
 
-      // 2. Fetch fresh data from Server in background
       const token = localStorage.getItem('authToken');
-      const response = await axios.get(`http://localhost:8080/api/loans/user/${userId}`, {
+      if (!token) {
+        throw new Error('SESSION_EXPIRED');
+      }
+
+      const response = await axios.get('http://localhost:8080/api/loans', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
-      const freshData = response.data || [];
+
+      const freshData = Array.isArray(response.data) ? response.data : [];
       setLoans(freshData);
-      sessionStorage.setItem('cached_loans', JSON.stringify(freshData));
+      sessionStorage.setItem(cacheKey, JSON.stringify(freshData));
+      setError('');
       setLoading(false);
     } catch (error) {
       console.error('Error fetching loans:', error);
+      const status = error?.response?.status;
+      if (status === 401 || status === 403 || error?.message === 'SESSION_EXPIRED') {
+        setError('Your session expired after the backend restart. Please login again to load loans.');
+        sessionStorage.removeItem(cacheKey);
+      } else {
+        setError('Unable to load loan data right now.');
+      }
       setLoading(false);
     }
-  };
+  }, [cacheKey, userId]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem('authToken');
-      const headers = { Authorization: `Bearer ${token}` };
-      
-      if (editingId) {
-        await axios.put(`http://localhost:8080/api/loans/${editingId}`, formData, { headers });
-      } else {
-        await axios.post('http://localhost:8080/api/loans', formData, { headers });
-      }
-      
-      fetchLoans();
-      resetForm();
-    } catch (error) {
-      console.error('Error saving loan:', error);
-      alert('Error saving loan');
-    }
-  };
+  useEffect(() => {
+    fetchLoans();
+  }, [fetchLoans]);
 
   const resetForm = () => {
-    setFormData({
-      loanName: '',
-      principalAmount: '',
-      interestRate: '',
-      startDate: new Date().toISOString().split('T')[0],
-      dueDate: '',
-      status: 'ACTIVE',
-      notes: '',
-    });
+    setFormData(getInitialFormData());
     setEditingId(null);
     setShowForm(false);
   };
 
-  const handleEditLoan = (loan) => {
-    setFormData({
-      ...loan,
-      startDate: new Date(loan.startDate).toISOString().split('T')[0],
-      dueDate: new Date(loan.dueDate).toISOString().split('T')[0],
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((previousData) => {
+      const nextData = {
+        ...previousData,
+        [name]: value,
+      };
+
+      if (
+        name === 'principalAmount' &&
+        !editingId &&
+        (previousData.outstandingAmount === '' || previousData.outstandingAmount === previousData.principalAmount)
+      ) {
+        nextData.outstandingAmount = value;
+      }
+
+      return nextData;
     });
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const headers = { Authorization: `Bearer ${token}` };
+      const payload = buildLoanPayload(formData);
+
+      if (editingId) {
+        await axios.put(`http://localhost:8080/api/loans/${editingId}`, payload, { headers });
+      } else {
+        await axios.post('http://localhost:8080/api/loans', payload, { headers });
+      }
+
+      await fetchLoans();
+      resetForm();
+      setError('');
+    } catch (error) {
+      console.error('Error saving loan:', error);
+      setError('Error saving loan');
+    }
+  };
+
+  const handleEditLoan = (loan) => {
+    setFormData(mapLoanToFormData(loan));
     setEditingId(loan.id);
     setShowForm(true);
   };
 
   const handleCloneLoan = (loan) => {
     setFormData({
-      ...loan,
-      loanName: loan.loanName + ' (Copy)',
-      startDate: new Date(loan.startDate).toISOString().split('T')[0],
-      dueDate: new Date(loan.dueDate).toISOString().split('T')[0],
+      ...mapLoanToFormData(loan),
+      loanName: `${loan.loanName} (Copy)`,
     });
     setEditingId(null);
     setShowForm(true);
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this loan?')) {
-      try {
-        const token = localStorage.getItem('authToken');
-        await axios.delete(`http://localhost:8080/api/loans/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        fetchLoans();
-        setSelectedLoan(null);
-      } catch (error) {
-        console.error('Error deleting loan:', error);
-        alert('Error deleting loan');
-      }
+    if (!window.confirm('Are you sure you want to delete this loan?')) {
+      return;
     }
-  };
 
-  const getCalendarUrl = (loan, emi = null) => {
-    const title = encodeURIComponent(emi ? `EMI Payment: ${loan.loanName} (#${emi.emiNumber})` : `Loan Due: ${loan.loanName}`);
-    const details = encodeURIComponent(emi ? `EMI amount due for ${loan.loanName}` : `Final due date for ${loan.loanName}`);
-    const date = (emi ? emi.dueDate : loan.dueDate).replace(/-/g, "").split('T')[0];
-    return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&dates=${date}/${date}`;
-  };
+    try {
+      const token = localStorage.getItem('authToken');
+      await axios.delete(`http://localhost:8080/api/loans/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-  const getWhatsAppUrl = (loan, emi = null) => {
-    const amount = emi ? emi.totalAmount : loan.outstandingAmount;
-    const msg = encodeURIComponent(`🏦 *FinFlow Loan Alert*\n\n*Loan:* ${loan.loanName}\n*Type:* ${emi ? 'EMI Payment' : 'Loan Overview'}\n*Amount:* ₹${parseFloat(amount).toLocaleString('en-IN')}\n*Due:* ${emi ? emi.dueDate : loan.dueDate}\n\n_Sent via Portfolio PMS_`);
-    return `https://wa.me/?text=${msg}`;
+      sessionStorage.removeItem(cacheKey);
+      await fetchLoans();
+      setSelectedLoan(null);
+      setError('');
+    } catch (error) {
+      console.error('Error deleting loan:', error);
+      setError('Error deleting loan');
+    }
   };
 
   return (
@@ -147,18 +215,25 @@ export default function Loans() {
       <div className={styles.container}>
         {!selectedLoan ? (
           <>
-            {/* Header */}
             <div className={styles.header}>
               <div>
                 <h2>Loan Management</h2>
                 <p>Track and manage all your loans and EMI payments</p>
               </div>
-              <button className={styles.addBtn} onClick={() => { resetForm(); setShowForm(!showForm); }}>
-                {showForm ? '✕ Cancel' : '+ Add Loan'}
+              <button
+                className={styles.addBtn}
+                onClick={() => {
+                  if (!showForm) {
+                    setFormData(getInitialFormData());
+                    setEditingId(null);
+                  }
+                  setShowForm((currentValue) => !currentValue);
+                }}
+              >
+                {showForm ? 'Cancel' : '+ Add Loan'}
               </button>
             </div>
 
-            {/* Summary Cards */}
             <div className={styles.summaryCards}>
               <div className={styles.card}>
                 <span className={styles.label}>Total Loans</span>
@@ -166,29 +241,43 @@ export default function Loans() {
               </div>
               <div className={styles.card}>
                 <span className={styles.label}>Active Loans</span>
-                <span className={styles.value}>
-                  {loans.filter((l) => l.status === 'ACTIVE').length}
-                </span>
+                <span className={styles.value}>{loans.filter((loan) => loan.status === 'ACTIVE').length}</span>
               </div>
               <div className={styles.card}>
                 <span className={styles.label}>Total Principal</span>
                 <span className={styles.value}>
-                  ₹{loans
-                    .reduce((sum, l) => sum + parseFloat(l.principalAmount || 0), 0)
+                  ₹
+                  {loans
+                    .reduce((sum, loan) => sum + parseFloat(loan.principalAmount || 0), 0)
                     .toFixed(2)}
                 </span>
               </div>
               <div className={styles.card}>
                 <span className={styles.label}>Outstanding</span>
                 <span className={styles.value}>
-                  ₹{loans
-                    .reduce((sum, l) => sum + parseFloat(l.outstandingAmount || 0), 0)
+                  ₹
+                  {loans
+                    .reduce((sum, loan) => sum + parseFloat(loan.outstandingAmount || 0), 0)
                     .toFixed(2)}
                 </span>
               </div>
             </div>
 
-            {/* Add Form */}
+            {error && (
+              <div className={styles.errorBanner}>
+                <span>{error}</span>
+                {(error.includes('login again') || error.includes('session')) && (
+                  <button
+                    type="button"
+                    className={styles.errorAction}
+                    onClick={() => navigate('/login')}
+                  >
+                    Go to Login
+                  </button>
+                )}
+              </div>
+            )}
+
             {showForm && (
               <div className={styles.formCard}>
                 <h3>{editingId ? 'Edit Loan' : 'Add New Loan'}</h3>
@@ -215,6 +304,17 @@ export default function Loans() {
                         placeholder="Enter amount"
                         step="0.01"
                         required
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label>Outstanding Amount</label>
+                      <input
+                        type="number"
+                        name="outstandingAmount"
+                        value={formData.outstandingAmount}
+                        onChange={handleInputChange}
+                        placeholder="Defaults to principal amount"
+                        step="0.01"
                       />
                     </div>
                     <div className={styles.formGroup}>
@@ -251,11 +351,7 @@ export default function Loans() {
                     </div>
                     <div className={styles.formGroup}>
                       <label>Status</label>
-                      <select
-                        name="status"
-                        value={formData.status}
-                        onChange={handleInputChange}
-                      >
+                      <select name="status" value={formData.status} onChange={handleInputChange}>
                         <option value="ACTIVE">Active</option>
                         <option value="PAID_OFF">Paid Off</option>
                         <option value="DEFAULTED">Defaulted</option>
@@ -279,7 +375,6 @@ export default function Loans() {
               </div>
             )}
 
-            {/* Loans Table */}
             <div className={styles.tableCard}>
               {loading ? (
                 <div className={styles.loading}>Loading loans...</div>
@@ -308,13 +403,13 @@ export default function Loans() {
                         </td>
                         <td>
                           <div className={styles.inlineEditGroup} onClick={() => handleEditLoan(loan)} title="Edit Principal">
-                            <span>₹{parseFloat(loan.principalAmount).toFixed(2)}</span>
+                            <span>₹{parseFloat(loan.principalAmount || 0).toFixed(2)}</span>
                             <span className={styles.pencilIcon}>✎</span>
                           </div>
                         </td>
                         <td>
                           <div className={styles.inlineEditGroup} onClick={() => handleEditLoan(loan)} title="Edit Outstanding">
-                            <span>₹{parseFloat(loan.outstandingAmount).toFixed(2)}</span>
+                            <span>₹{parseFloat(loan.outstandingAmount || 0).toFixed(2)}</span>
                             <span className={styles.pencilIcon}>✎</span>
                           </div>
                         </td>
@@ -326,9 +421,7 @@ export default function Loans() {
                         </td>
                         <td>
                           <div className={styles.inlineEditGroup} onClick={() => handleEditLoan(loan)} title="Edit Status">
-                            <span className={`${styles.badge} ${styles[loan.status.toLowerCase()]}`}>
-                              {loan.status}
-                            </span>
+                            <span className={`${styles.badge} ${styles[loan.status.toLowerCase()]}`}>{loan.status}</span>
                             <span className={styles.pencilIcon}>✎</span>
                           </div>
                         </td>
@@ -339,26 +432,23 @@ export default function Loans() {
                           </div>
                         </td>
                         <td style={{ display: 'flex', gap: '8px' }}>
-                          <a href={getCalendarUrl(loan)} target="_blank" rel="noreferrer" className={styles.iconAction} title="Add to Calendar">📅</a>
-                          <a href={getWhatsAppUrl(loan)} target="_blank" rel="noreferrer" className={styles.iconAction} title="Share on WhatsApp">💬</a>
+                          <a href={getCalendarUrl(loan)} target="_blank" rel="noreferrer" className={styles.iconAction} title="Add to Calendar">
+                            📅
+                          </a>
+                          <a href={getWhatsAppUrl(loan)} target="_blank" rel="noreferrer" className={styles.iconAction} title="Share on WhatsApp">
+                            💬
+                          </a>
                         </td>
                         <td style={{ display: 'flex', gap: '8px' }}>
-                          <button
-                            className={styles.actionIconBtn}
-                            onClick={() => setSelectedLoan(loan)}
-                            title="View Details"
-                          >
+                          <button className={styles.actionIconBtn} onClick={() => setSelectedLoan(loan)} title="View Details">
                             👁️
                           </button>
-                          <button
-                            className={styles.actionIconBtn}
-                            onClick={() => handleCloneLoan(loan)}
-                            title="Clone Loan"
-                          >
+                          <button className={styles.actionIconBtn} onClick={() => handleCloneLoan(loan)} title="Clone Loan">
                             📋
                           </button>
                           <button
-                            className={styles.actionIconBtn} style={{ color: '#dc2626' }}
+                            className={styles.actionIconBtn}
+                            style={{ color: '#dc2626' }}
                             onClick={() => handleDelete(loan.id)}
                             title="Delete Loan"
                           >
@@ -375,32 +465,20 @@ export default function Loans() {
             </div>
           </>
         ) : (
-          <LoanDetail
-            loan={selectedLoan}
-            onBack={() => setSelectedLoan(null)}
-            onDelete={() => {
-              handleDelete(selectedLoan.id);
-            }}
-          />
+          <LoanDetail loan={selectedLoan} onBack={() => setSelectedLoan(null)} onDelete={() => handleDelete(selectedLoan.id)} />
         )}
       </div>
     </MainLayout>
   );
 }
 
-// Loan Detail Component
 function LoanDetail({ loan, onBack, onDelete }) {
   const [emis, setEmis] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingEmi, setEditingEmi] = useState(null);
 
-  useEffect(() => {
-    fetchEMIs();
-  }, []);
-
-  const fetchEMIs = async () => {
+  const fetchEmis = useCallback(async () => {
     try {
-      // Check cache first
       const cacheKey = `cached_emis_${loan.id}`;
       const cachedEmis = sessionStorage.getItem(cacheKey);
       if (cachedEmis) {
@@ -412,7 +490,7 @@ function LoanDetail({ loan, onBack, onDelete }) {
       const response = await axios.get(`http://localhost:8080/api/loans/${loan.id}/emis`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       const freshEmis = response.data || [];
       setEmis(freshEmis);
       sessionStorage.setItem(cacheKey, JSON.stringify(freshEmis));
@@ -421,7 +499,11 @@ function LoanDetail({ loan, onBack, onDelete }) {
       console.error('Error fetching EMIs:', error);
       setLoading(false);
     }
-  };
+  }, [loan.id]);
+
+  useEffect(() => {
+    fetchEmis();
+  }, [fetchEmis]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -436,27 +518,28 @@ function LoanDetail({ loan, onBack, onDelete }) {
     }
   };
 
-  const submitEmiEdit = async (e) => {
-    e.preventDefault();
+  const submitEmiEdit = async (event) => {
+    event.preventDefault();
+
     try {
       const token = localStorage.getItem('authToken');
-      await axios.put(
-        `http://localhost:8080/api/loans/${loan.id}/emis/${editingEmi.id}`,
-        editingEmi,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.put(`http://localhost:8080/api/loans/${loan.id}/emis/${editingEmi.id}`, editingEmi, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       setEditingEmi(null);
-      fetchEMIs();
-    } catch (err) {
+      await fetchEmis();
+    } catch (error) {
+      console.error('Error updating EMI:', error);
       alert('Error updating EMI');
     }
   };
 
-  // Computations
-  const totalEmiPrincipal = emis.reduce((sum, emi) => sum + parseFloat(emi.principalAmount || 0), 0);
-  const paidEmiPrincipal = emis.filter(e => e.status === 'PAID').reduce((sum, emi) => sum + parseFloat(emi.principalAmount || 0), 0);
-  const computedOutstanding = parseFloat(loan.principalAmount) - paidEmiPrincipal;
-  const paidCount = emis.filter(e => e.status === 'PAID').length;
+  const paidEmiPrincipal = emis
+    .filter((emi) => emi.status === 'PAID')
+    .reduce((sum, emi) => sum + parseFloat(emi.principalAmount || 0), 0);
+  const computedOutstanding = parseFloat(loan.principalAmount || 0) - paidEmiPrincipal;
+  const paidCount = emis.filter((emi) => emi.status === 'PAID').length;
 
   return (
     <div className={styles.detailContainer}>
@@ -465,30 +548,38 @@ function LoanDetail({ loan, onBack, onDelete }) {
       </button>
 
       <div className={styles.detailLayout}>
-        {/* Left: Loan Details */}
         <div className={styles.detailLeft}>
           <div className={styles.detailCard}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-               <h2 style={{ fontSize: '24px', margin: '0 0 16px', color: '#1e293b' }}>{loan.loanName}</h2>
-               <span className={`${styles.badge} ${styles[loan.status.toLowerCase()]}`} style={{ fontSize: '14px', padding: '6px 12px' }}>
-                  {loan.status}
-               </span>
+              <h2 style={{ fontSize: '24px', margin: '0 0 16px', color: '#1e293b' }}>{loan.loanName}</h2>
+              <span className={`${styles.badge} ${styles[loan.status.toLowerCase()]}`} style={{ fontSize: '14px', padding: '6px 12px' }}>
+                {loan.status}
+              </span>
             </div>
-            
-            {/* 3D Dashboard Cards for Math */}
+
             <div className={styles.mathCards}>
-               <div className={styles.mathCard3D}>
-                  <p>Paid Progress</p>
-                  <h3>{paidCount} <span style={{fontSize: '16px', color: '#64748b', fontWeight: '500'}}>out of {emis.length}</span></h3>
-                  <div style={{ background: '#e2e8f0', height: 6, borderRadius: 3, marginTop: 10 }}>
-                     <div style={{ background: '#2563eb', height: 6, borderRadius: 3, width: `${emis.length ? (paidCount/emis.length)*100 : 0}%` }} />
-                  </div>
-               </div>
-               <div className={styles.mathCard3D}>
-                  <p>Outstanding Amount</p>
-                  <h3 style={{ color: '#dc2626' }}>₹{Math.max(0, computedOutstanding).toFixed(2)}</h3>
-                  <small style={{ color: '#64748b' }}>Original: ₹{parseFloat(loan.principalAmount).toFixed(2)}</small>
-               </div>
+              <div className={styles.mathCard3D}>
+                <p>Paid Progress</p>
+                <h3>
+                  {paidCount}{' '}
+                  <span style={{ fontSize: '16px', color: '#64748b', fontWeight: '500' }}>out of {emis.length}</span>
+                </h3>
+                <div style={{ background: '#e2e8f0', height: 6, borderRadius: 3, marginTop: 10 }}>
+                  <div
+                    style={{
+                      background: '#2563eb',
+                      height: 6,
+                      borderRadius: 3,
+                      width: `${emis.length ? (paidCount / emis.length) * 100 : 0}%`,
+                    }}
+                  />
+                </div>
+              </div>
+              <div className={styles.mathCard3D}>
+                <p>Outstanding Amount</p>
+                <h3 style={{ color: '#dc2626' }}>₹{Math.max(0, computedOutstanding).toFixed(2)}</h3>
+                <small style={{ color: '#64748b' }}>Original: ₹{parseFloat(loan.principalAmount || 0).toFixed(2)}</small>
+              </div>
             </div>
 
             <div className={styles.detailGrid}>
@@ -517,7 +608,6 @@ function LoanDetail({ loan, onBack, onDelete }) {
           </div>
         </div>
 
-        {/* Right: EMI Table */}
         <div className={styles.detailRight}>
           <div className={styles.emiCard}>
             <h3>EMI Schedule ({emis.length} total)</h3>
@@ -538,7 +628,16 @@ function LoanDetail({ loan, onBack, onDelete }) {
                 </thead>
                 <tbody>
                   {emis.map((emi) => (
-                    <tr key={emi.id} onClick={() => setEditingEmi({ ...emi, dueDate: new Date(emi.dueDate).toISOString().split('T')[0] })} style={{ cursor: 'pointer' }}>
+                    <tr
+                      key={emi.id}
+                      onClick={() =>
+                        setEditingEmi({
+                          ...emi,
+                          dueDate: new Date(emi.dueDate).toISOString().split('T')[0],
+                        })
+                      }
+                      style={{ cursor: 'pointer' }}
+                    >
                       <td>{emi.emiNumber}</td>
                       <td>
                         <div className={styles.inlineEditGroup} title="Edit Due Date">
@@ -548,36 +647,51 @@ function LoanDetail({ loan, onBack, onDelete }) {
                       </td>
                       <td>
                         <div className={styles.inlineEditGroup} title="Edit Principal">
-                          <span>₹{parseFloat(emi.principalAmount).toFixed(2)}</span>
+                          <span>₹{parseFloat(emi.principalAmount || 0).toFixed(2)}</span>
                           <span className={styles.pencilIcon}>✎</span>
                         </div>
                       </td>
                       <td>
                         <div className={styles.inlineEditGroup} title="Edit Interest">
-                          <span>₹{parseFloat(emi.interestAmount).toFixed(2)}</span>
+                          <span>₹{parseFloat(emi.interestAmount || 0).toFixed(2)}</span>
                           <span className={styles.pencilIcon}>✎</span>
                         </div>
                       </td>
                       <td>
                         <div className={styles.inlineEditGroup} title="Edit Total">
-                          <span>₹{parseFloat(emi.totalAmount).toFixed(2)}</span>
+                          <span>₹{parseFloat(emi.totalAmount || 0).toFixed(2)}</span>
                           <span className={styles.pencilIcon}>✎</span>
                         </div>
                       </td>
                       <td>
                         <div className={styles.inlineEditGroup} title="Edit Status">
-                          <span
-                            className={styles.statusBadge}
-                            style={{ backgroundColor: getStatusColor(emi.status) }}
-                          >
+                          <span className={styles.statusBadge} style={{ backgroundColor: getStatusColor(emi.status) }}>
                             {emi.status}
                           </span>
                           <span className={styles.pencilIcon}>✎</span>
                         </div>
                       </td>
                       <td style={{ display: 'flex', gap: '8px' }}>
-                        <a href={getCalendarUrl(loan, emi)} target="_blank" rel="noreferrer" className={styles.iconAction} title="Add to Calendar">📅</a>
-                        <a href={getWhatsAppUrl(loan, emi)} target="_blank" rel="noreferrer" className={styles.iconAction} title="Share on WhatsApp">💬</a>
+                        <a
+                          href={getCalendarUrl(loan, emi)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={styles.iconAction}
+                          title="Add to Calendar"
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          📅
+                        </a>
+                        <a
+                          href={getWhatsAppUrl(loan, emi)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={styles.iconAction}
+                          title="Share on WhatsApp"
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          💬
+                        </a>
                       </td>
                     </tr>
                   ))}
@@ -597,31 +711,61 @@ function LoanDetail({ loan, onBack, onDelete }) {
             <form onSubmit={submitEmiEdit} className={styles.form}>
               <div className={styles.formGroup}>
                 <label>Due Date</label>
-                <input type="date" value={editingEmi.dueDate} onChange={(e) => setEditingEmi({...editingEmi, dueDate: e.target.value})} required />
+                <input
+                  type="date"
+                  value={editingEmi.dueDate}
+                  onChange={(event) => setEditingEmi({ ...editingEmi, dueDate: event.target.value })}
+                  required
+                />
               </div>
               <div className={styles.formGroup}>
                 <label>Principal</label>
-                <input type="number" step="0.01" value={editingEmi.principalAmount} onChange={(e) => setEditingEmi({...editingEmi, principalAmount: e.target.value})} required />
+                <input
+                  type="number"
+                  step="0.01"
+                  value={editingEmi.principalAmount}
+                  onChange={(event) => setEditingEmi({ ...editingEmi, principalAmount: event.target.value })}
+                  required
+                />
               </div>
               <div className={styles.formGroup}>
                 <label>Interest</label>
-                <input type="number" step="0.01" value={editingEmi.interestAmount} onChange={(e) => setEditingEmi({...editingEmi, interestAmount: e.target.value})} required />
+                <input
+                  type="number"
+                  step="0.01"
+                  value={editingEmi.interestAmount}
+                  onChange={(event) => setEditingEmi({ ...editingEmi, interestAmount: event.target.value })}
+                  required
+                />
               </div>
               <div className={styles.formGroup}>
                 <label>Total Amount</label>
-                <input type="number" step="0.01" value={editingEmi.totalAmount} onChange={(e) => setEditingEmi({...editingEmi, totalAmount: e.target.value})} required />
+                <input
+                  type="number"
+                  step="0.01"
+                  value={editingEmi.totalAmount}
+                  onChange={(event) => setEditingEmi({ ...editingEmi, totalAmount: event.target.value })}
+                  required
+                />
               </div>
               <div className={styles.formGroup}>
                 <label>Status</label>
-                <select value={editingEmi.status} onChange={(e) => setEditingEmi({...editingEmi, status: e.target.value})}>
+                <select
+                  value={editingEmi.status}
+                  onChange={(event) => setEditingEmi({ ...editingEmi, status: event.target.value })}
+                >
                   <option value="PENDING">Pending</option>
                   <option value="PAID">Paid</option>
                   <option value="OVERDUE">Overdue</option>
                 </select>
               </div>
               <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                <button type="button" className={styles.deleteBtn} onClick={() => setEditingEmi(null)}>Cancel</button>
-                <button type="submit" className={styles.submitBtn}>Save EMI</button>
+                <button type="button" className={styles.deleteBtn} onClick={() => setEditingEmi(null)}>
+                  Cancel
+                </button>
+                <button type="submit" className={styles.submitBtn}>
+                  Save EMI
+                </button>
               </div>
             </form>
           </div>
